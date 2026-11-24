@@ -5067,6 +5067,10 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         guard let textInputPanelNode = self.inputPanelNode as? ChatTextInputPanelNode else {
             return
         }
+        // Chitgram: ".heart" (Android HeartAnimator) goes out as a red heart that cycles colours on this side.
+        if scheduleTime == nil, overrideText == nil, self.controller?.chitgramHeartBeforeSend(textInputPanelNode.inputTextState) == true {
+            return
+        }
         self.historyNode.justSentTextMessage = true
         
         if let richTextInputNode = textInputPanelNode.richTextInputNode, richTextInputNode.isInputFirstResponder {
