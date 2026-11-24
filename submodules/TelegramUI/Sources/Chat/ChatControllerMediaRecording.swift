@@ -692,7 +692,8 @@ extension ChatControllerImpl {
         // Chitgram: in a chat with "One-time voice & video" on, voice messages go out view-once.
         let viewOnce = requestedViewOnce || (self.chatLocation.peerId.flatMap { ChitgramPerChat.isOneTimeMedia($0.toInt64()) } ?? false)
         // NOVAGRAM-HOOK #38 — ovozli xabarni yuborishdan oldin tasdiq (voice ACTUAL send entry; sticker kabi bypass-flag bilan)
-        if (UserDefaults(suiteName: "pro_messager")?.bool(forKey: "send_confirm_enabled") ?? false), !(UserDefaults(suiteName: "pro_messager")?.bool(forKey: "fenix_voice_bypass") ?? false) {
+        // Chitgram: also Android's "Sending a voice" confirmation (`confirm_voice`).
+        if (UserDefaults(suiteName: "pro_messager")?.bool(forKey: "send_confirm_enabled") ?? false) || ChitgramPreferences.shared.bool(.confirmVoice), !(UserDefaults(suiteName: "pro_messager")?.bool(forKey: "fenix_voice_bypass") ?? false) {
             let novagramVTitle: String; let novagramVText: String; let novagramVSend: String; let novagramVCancel: String
             switch NovagramL10n.languageKey(for: self.presentationInterfaceState.strings) {
             case "uz": novagramVTitle = "Yuborishni tasdiqlang"; novagramVText = "Ovozli xabarni yubormoqchimisiz?"; novagramVSend = "Yuborish"; novagramVCancel = "Bekor qilish"

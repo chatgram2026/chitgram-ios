@@ -142,7 +142,11 @@ private func actionFromActivity(_ activity: PeerInputActivity?) -> Api.SendMessa
 }
 
 private func requestActivity(postbox: Postbox, network: Network, accountPeerId: PeerId, peerId: PeerId, threadId: Int64?, activity: PeerInputActivity?) -> Signal<Void, NoError> {
-    if UserDefaults(suiteName: "pro_messager")?.bool(forKey: "is_ghost_mode_active") ?? false {
+    if isNovagramGhostMasterOn {
+        return .complete()
+    }
+    // Chitgram: Android's "Hide typing" / "Hide sending progress"; a cancel (nil) always goes through.
+    if let activity = activity, isNovagramGhostHiding(activity) {
         return .complete()
     }
     

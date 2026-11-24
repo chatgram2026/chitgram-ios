@@ -2086,7 +2086,8 @@ func _internal_markStoryAsSeen(account: Account, peerId: PeerId, id: Int32, asPi
             }
             #endif
             
-            if isNovagramGhostModeActive {
+            // Chitgram: Novagram's ghost switch or Android's "View stories anonymously".
+            if isNovagramGhostHidingStoryViews {
                 return .complete()
             }
 

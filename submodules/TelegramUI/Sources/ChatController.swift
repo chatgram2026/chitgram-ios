@@ -150,6 +150,7 @@ import NovagramMessenger
 import NovagramLocalization
 import NovagramSponsored
 import NovagramReviewPrompt
+import ChitgramCore
 
 public final class ChatControllerOverlayPresentationData {
     public let expandData: (ASDisplayNode?, () -> Void)
@@ -326,6 +327,8 @@ public final class ChatControllerImpl: TelegramBaseController, ChatController, G
 
     let chatBackgroundNode: WallpaperBackgroundNode
     public private(set) var controllerInteraction: ChatControllerInteraction?
+    // Chitgram: set while a GIF the user just confirmed re-enters its own path (see chitgramConfirmSend).
+    var chitgramSendConfirmed: Bool = false
     var interfaceInteraction: ChatPanelInterfaceInteraction?
     
     let messageContextDisposable = MetaDisposable()
@@ -2438,7 +2441,8 @@ public final class ChatControllerImpl: TelegramBaseController, ChatController, G
                 return false
             }
             // NOVAGRAM-HOOK #38 — sticker confirm (covers every send branch; runs before branching)
-            if UserDefaults(suiteName: "pro_messager")?.bool(forKey: "send_confirm_enabled") ?? false, !(UserDefaults(suiteName: "pro_messager")?.bool(forKey: "fenix_sticker_bypass") ?? false) {
+            // Chitgram: also Android's "Sending a sticker" confirmation (`confirm_sticker`).
+            if (UserDefaults(suiteName: "pro_messager")?.bool(forKey: "send_confirm_enabled") ?? false) || ChitgramPreferences.shared.bool(.confirmSticker), !(UserDefaults(suiteName: "pro_messager")?.bool(forKey: "fenix_sticker_bypass") ?? false) {
                 let novagramSTitle: String; let novagramSText: String; let novagramSSend: String; let novagramSCancel: String
                 switch NovagramL10n.languageKey(for: strongSelf.presentationData.strings) {
                 case "uz": novagramSTitle = "Yuborishni tasdiqlang"; novagramSText = "Stikerni yubormoqchimisiz?"; novagramSSend = "Yuborish"; novagramSCancel = "Bekor qilish"
@@ -2743,6 +2747,18 @@ public final class ChatControllerImpl: TelegramBaseController, ChatController, G
             }
         }, sendGif: { [weak self] fileReference, sourceView, sourceRect, silentPosting, schedule in
             if let strongSelf = self {
+                // Chitgram: "Sending a gif" asks first (Android), then sends the same GIF again.
+                if ChitgramPreferences.shared.bool(.confirmGif) && !strongSelf.chitgramSendConfirmed {
+                    strongSelf.chitgramConfirmSend(completion: { [weak strongSelf] in
+                        guard let strongSelf else {
+                            return
+                        }
+                        strongSelf.chitgramSendConfirmed = true
+                        let _ = strongSelf.controllerInteraction?.sendGif(fileReference, sourceView, sourceRect, silentPosting, schedule)
+                        strongSelf.chitgramSendConfirmed = false
+                    })
+                    return false
+                }
                 if let _ = strongSelf.presentationInterfaceState.slowmodeState, strongSelf.presentationInterfaceState.subject != .scheduledMessages {
                     strongSelf.interfaceInteraction?.displaySlowmodeTooltip(sourceView, sourceRect)
                     return false

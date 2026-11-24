@@ -43,7 +43,8 @@ private final class AccountPresenceManagerImpl {
     }
     
     private func updatePresence(_ isOnline: Bool) {
-        let isGhostMode = UserDefaults(suiteName: "pro_messager")?.bool(forKey: "is_ghost_mode_active") ?? false
+        // Chitgram: Novagram's ghost switch or Android's "Hide online status".
+        let isGhostMode = isNovagramGhostHidingOnline
         let request: Signal<Api.Bool, MTRpcError>
         if isOnline && !isGhostMode {
             let timer = SignalKitTimer(timeout: 30.0, repeat: false, completion: { [weak self] in

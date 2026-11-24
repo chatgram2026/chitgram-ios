@@ -93,6 +93,9 @@ private enum NovagramEntry: ItemListNodeEntry {
     // Chitgram: the auto answer and its text (Android: Chitgram settings, "Auto answer").
     case autoAnswer(PresentationTheme, String, String, Bool)
     case autoAnswerText(PresentationTheme, String)
+    // Chitgram: a switch of Android's kept in Chitgram's store (synced with Android): theme, stable id, key, title,
+    // text, value. Ids below 220 sit in the chat section (ghost), the others in the protection section.
+    case chitgramSwitch(PresentationTheme, Int32, String, String, String, Bool)
     // Chitgram: the keyword watch (Android: Chitgram settings, "Keyword watch").
     case keywordWatch(PresentationTheme, String)
     case messagingFooter(PresentationTheme, String)
@@ -218,6 +221,8 @@ private enum NovagramEntry: ItemListNodeEntry {
             return NovagramSection.developer.rawValue
         case .accountsHeader, .accountsManager, .aboutRow, .novagramBots:
             return NovagramSection.accounts.rawValue
+        case let .chitgramSwitch(_, id, _, _, _, _):
+            return id < 220 ? NovagramSection.chat.rawValue : NovagramSection.protection.rawValue
         }
     }
 
@@ -258,6 +263,7 @@ private enum NovagramEntry: ItemListNodeEntry {
         case .autoAnswer:                return 101
         case .autoAnswerText:            return 102
         case .keywordWatch:              return 99
+        case let .chitgramSwitch(_, id, _, _, _, _): return id
         case .messagingFooter:           return 29
         // STT
         case .sttHeader:                 return 30
@@ -338,6 +344,9 @@ private enum NovagramEntry: ItemListNodeEntry {
             return 28 * 10 + 4
         case .keywordWatch:
             return 28 * 10 + 5
+        case let .chitgramSwitch(_, id, _, _, _, _):
+            // Ghost switches (210…) right after the ghost button (5), confirmations (230…) after Novagram's (45).
+            return id < 220 ? 5 * 10 + Int(id - 209) : 45 * 10 + Int(id - 229)
         case .tabBarEditor:
             return 14 * 10 + 5
         default:
@@ -410,6 +419,8 @@ private enum NovagramEntry: ItemListNodeEntry {
             if case let .autoAnswer(rhsTheme, rhsTitle, rhsText, rhsValue) = rhs, lhsTheme === rhsTheme, lhsTitle == rhsTitle, lhsText == rhsText, lhsValue == rhsValue { return true } else { return false }
         case let .autoAnswerText(lhsTheme, lhsTitle):
             if case let .autoAnswerText(rhsTheme, rhsTitle) = rhs, lhsTheme === rhsTheme, lhsTitle == rhsTitle { return true } else { return false }
+        case let .chitgramSwitch(lhsTheme, lhsId, lhsKey, lhsTitle, lhsText, lhsValue):
+            if case let .chitgramSwitch(rhsTheme, rhsId, rhsKey, rhsTitle, rhsText, rhsValue) = rhs, lhsTheme === rhsTheme, lhsId == rhsId, lhsKey == rhsKey, lhsTitle == rhsTitle, lhsText == rhsText, lhsValue == rhsValue { return true } else { return false }
         case let .keywordWatch(lhsTheme, lhsTitle):
             if case let .keywordWatch(rhsTheme, rhsTitle) = rhs, lhsTheme === rhsTheme, lhsTitle == rhsTitle { return true } else { return false }
         case let .messagingFooter(lhsTheme, lhsText):
@@ -778,6 +789,12 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .autoAnswerText(_, title):
             return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "text.bubble.fill", color: .green), title: title, label: "", sectionId: self.section, style: .blocks, action: {
                 arguments.openAutoAnswerText()
+            }, tag: self.novagramTag)
+        case let .chitgramSwitch(_, _, key, title, text, value):
+            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: chitgramSwitchSymbol(key), color: chitgramSwitchColor(key)), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+                if let preferenceKey = ChitgramPreferences.Key(rawValue: key) {
+                    ChitgramPreferences.shared.set(val, for: preferenceKey)
+                }
             }, tag: self.novagramTag)
         case let .keywordWatch(_, title):
             return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "bell.badge.fill", color: .orange), title: title, label: "", sectionId: self.section, style: .blocks, action: {
@@ -1579,6 +1596,12 @@ private func novagramSettingsEntries(presentationData: PresentationData, state: 
     entries.append(.editedHistoryEnabled(presentationData.theme, l10n.settings_chat_editedHistory_title, l10n.settings_chat_editedHistory_subtitle, state.editedHistoryEnabled))
     entries.append(.showViewFirstMessage(presentationData.theme, l10n.settings_chat_firstMessage_title, l10n.settings_chat_firstMessage_subtitle, state.showViewFirstMessage))
     entries.append(.showGhostMode(presentationData.theme, l10n.settings_chat_ghost_title, l10n.settings_chat_ghost_subtitle, state.showGhostMode))
+    // Chitgram: Android's ghost switches, each hiding one signal (Privacy section), and anonymous story views.
+    ChitgramStrings.setLanguageCode(presentationData.strings.primaryComponent.languageCode)
+    let chitgramGhostRows: [(Int32, ChitgramPreferences.Key, Int, Int)] = [(210, .ghostHideRead, 558, 559), (211, .ghostHideOnline, 560, 561), (212, .ghostHideTyping, 562, 563), (213, .ghostHideUpload, 564, 565), (214, .ghostStory, 232, 233)]
+    for (id, key, titleId, textId) in chitgramGhostRows {
+        entries.append(.chitgramSwitch(presentationData.theme, id, key.rawValue, ChitgramStrings.get(titleId), ChitgramStrings.get(textId), ChitgramPreferences.shared.bool(key)))
+    }
     entries.append(.longPressCameraSelection(presentationData.theme, l10n.settings_chat_camera_title, l10n.settings_chat_camera_subtitle, state.longPressCameraSelection))
     entries.append(.roundVideoFromGallery(presentationData.theme, l10n.settings_chat_roundVideoGallery_title, l10n.settings_chat_roundVideoGallery_subtitle, state.roundVideoFromGallery, true))
     entries.append(.forwardHideNames(presentationData.theme, l10n.settings_chat_forwardHideNames_title, l10n.settings_chat_forwardHideNames_subtitle, state.forwardHideNames, true))
@@ -1651,6 +1674,11 @@ private func novagramSettingsEntries(presentationData: PresentationData, state: 
     entries.append(.autoDownloadDisabled(presentationData.theme, NovagramAutoDownloadStrings.title(langCode: langCode), NovagramAutoDownloadStrings.subtitle(langCode: langCode), state.autoDownloadDisabled, false))
     // Feature #38: yuborishdan oldin tasdiq so'rovi toggle
     entries.append(.sendConfirmEnabled(presentationData.theme, NovagramSendConfirmStrings.toggleTitle(langCode: langCode), NovagramSendConfirmStrings.toggleSubtitle(langCode: langCode), state.sendConfirmEnabled, false))
+    // Chitgram: Android's confirmation dialogs, one per kind.
+    let chitgramConfirmRows: [(Int32, ChitgramPreferences.Key, Int, Int)] = [(230, .confirmSticker, 210, 191), (231, .confirmVoice, 211, 192), (232, .confirmGif, 212, 193)]
+    for (id, key, titleId, textId) in chitgramConfirmRows {
+        entries.append(.chitgramSwitch(presentationData.theme, id, key.rawValue, ChitgramStrings.get(titleId), ChitgramStrings.get(textId), ChitgramPreferences.shared.bool(key)))
+    }
     entries.append(.enableNovagramProxy(presentationData.theme, NovagramProxyStrings.toggleTitle(langCode: langCode), NovagramProxyStrings.toggleSubtitle(langCode: langCode), state.enableNovagramProxy))
     entries.append(.protectionFooter(presentationData.theme, l10n.settings_protection_footer))
 
@@ -1736,6 +1764,34 @@ private func novagramSettingsEntries(presentationData: PresentationData, state: 
     // ItemListController entries should arrive in stableId order to avoid an
     // assertion. Section visual order is controlled by stableId numbering.
     return entries.sorted()
+}
+
+/// Chitgram: the icon of a `chitgramSwitch` row.
+private func chitgramSwitchSymbol(_ key: String) -> String {
+    switch ChitgramPreferences.Key(rawValue: key) {
+    case .ghostHideRead:
+        return "checkmark.message.fill"
+    case .ghostHideOnline:
+        return "circle.dashed"
+    case .ghostHideTyping:
+        return "ellipsis.bubble.fill"
+    case .ghostHideUpload:
+        return "arrow.up.circle.fill"
+    case .ghostStory:
+        return "eye.slash.fill"
+    case .confirmSticker:
+        return "face.smiling.fill"
+    case .confirmVoice:
+        return "mic.fill"
+    case .confirmGif:
+        return "photo.fill"
+    default:
+        return "switch.2"
+    }
+}
+
+private func chitgramSwitchColor(_ key: String) -> NovagramIconColor {
+    return key.hasPrefix("confirm") ? .orange : .gray
 }
 
 private final class NovagramSettingsArguments {
