@@ -360,6 +360,8 @@ public final class TabBarComponent: Component {
     public let axis: Axis
     /// Icons without labels, on either axis.
     public let isCompact: Bool
+    // Chitgram: the tabs' names (Android ChatgramTabs labels): 0 every tab, 1 only the selected one, 2 none.
+    public let chitgramLabelsMode: Int
     
     public init(
         theme: PresentationTheme,
@@ -371,7 +373,8 @@ public final class TabBarComponent: Component {
         selectedId: AnyHashable?,
         outerInsets: UIEdgeInsets,
         axis: Axis,
-        isCompact: Bool
+        isCompact: Bool,
+        chitgramLabelsMode: Int = 0
     ) {
         self.theme = theme
         self.tintSelectedItem = tintSelectedItem
@@ -383,6 +386,7 @@ public final class TabBarComponent: Component {
         self.outerInsets = outerInsets
         self.axis = axis
         self.isCompact = isCompact
+        self.chitgramLabelsMode = chitgramLabelsMode
     }
     
     public static func ==(lhs: TabBarComponent, rhs: TabBarComponent) -> Bool {
@@ -414,6 +418,9 @@ public final class TabBarComponent: Component {
             return false
         }
         if lhs.isCompact != rhs.isCompact {
+            return false
+        }
+        if lhs.chitgramLabelsMode != rhs.chitgramLabelsMode {
             return false
         }
         return true
@@ -769,7 +776,7 @@ public final class TabBarComponent: Component {
                         item: item,
                         theme: component.theme,
                         isSearchActive: search?.isActive == true,
-                        showsTitle: !component.isCompact,
+                        showsTitle: !component.isCompact && (component.chitgramLabelsMode == 0 || (component.chitgramLabelsMode == 1 && isItemSelected)),
                         isSelected: false,
                         tintSelectedItem: component.tintSelectedItem,
                         isUnconstrained: false
@@ -783,7 +790,7 @@ public final class TabBarComponent: Component {
                         item: item,
                         theme: component.theme,
                         isSearchActive: search?.isActive == true,
-                        showsTitle: !component.isCompact,
+                        showsTitle: !component.isCompact && (component.chitgramLabelsMode == 0 || (component.chitgramLabelsMode == 1 && isItemSelected)),
                         isSelected: true,
                         tintSelectedItem: component.tintSelectedItem,
                         isUnconstrained: false

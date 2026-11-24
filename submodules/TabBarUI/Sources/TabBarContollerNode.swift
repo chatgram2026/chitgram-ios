@@ -1,4 +1,5 @@
 import Foundation
+import ChitgramCore
 import UIKit
 import AsyncDisplayKit
 import Display
@@ -323,7 +324,8 @@ final class TabBarControllerNode: ASDisplayNode {
                 selectedId: selectedId,
                 outerInsets: UIEdgeInsets(top: 0.0, left: sideInset, bottom: tabBarBottomInset, right: sideInset),
                 axis: sidePlacement == nil ? .horizontal : .vertical,
-                isCompact: tabBarIsCompact(layout: params.layout, sidePlacement: sidePlacement)
+                isCompact: tabBarIsCompact(layout: params.layout, sidePlacement: sidePlacement),
+                chitgramLabelsMode: ChitgramTabs.labelsMode()
             )),
             environment: {},
             containerSize: sidePlacement?.frame.size ?? CGSize(width: params.layout.size.width - sideInset * 2.0, height: 100.0)
