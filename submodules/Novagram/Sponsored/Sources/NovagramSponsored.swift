@@ -6,6 +6,7 @@ import AccountContext
 import Display
 import ContextUI
 import NovagramMessenger
+import ChitgramEngine
 
 // Chitgram: Novagram's ads ran on its closed NovagramAds SDK and its own ad server, which are not ours to ship. This
 // module keeps the API the Telegram-owned hooks call, with no ads of its own: every "if ours" answers no, and every
@@ -118,18 +119,31 @@ public struct NovagramPromotedPeer: Equatable {
 }
 
 public enum NovagramSearchAds {
-    /// Telegram's own search ads, hidden while "Remove all ads" is on.
+    /// The account whose search showed the promoted channel last, for counting its tap.
+    private static weak var lastContext: AccountContext?
+
+    /// Telegram's own search ads, hidden while "Remove all ads" is on. Chitgram: the sponsored channel of Chitgram's
+    /// ads backend (Android AdsManager) fills the promoted slot, and Telegram's own follow it.
     public static func adPeers(context: AccountContext, query: String, telegramAdPeers: Signal<[AdPeer], NoError>) -> Signal<([AdPeer], NovagramPromotedPeer?), NoError> {
         let empty: ([AdPeer], NovagramPromotedPeer?) = ([], nil)
-        return NovagramSponsored.gated(empty: empty, telegramAdPeers |> map { adPeers -> ([AdPeer], NovagramPromotedPeer?) in
-            return (adPeers, nil)
+        self.lastContext = context
+        return NovagramSponsored.gated(empty: empty, combineLatest(telegramAdPeers, ChitgramSearchAds.ad(context: context, query: query))
+        |> map { adPeers, chitgramAd -> ([AdPeer], NovagramPromotedPeer?) in
+            guard let chitgramAd, let orderId = ChitgramSearchAds.orderId(opaqueId: chitgramAd.opaqueId) else {
+                return (adPeers, nil)
+            }
+            return (adPeers.filter { $0.peer.id != chitgramAd.peer.id }, NovagramPromotedPeer(peer: chitgramAd.peer, token: orderId))
         })
     }
 
     public static func recordView(token: String) {
     }
 
+    /// Chitgram: a tap on the sponsored channel is counted by Chitgram's ads backend, then the channel opens.
     public static func recordClick(token: String, thenOpen open: @escaping () -> Void) {
+        if let context = self.lastContext {
+            ChitgramSearchAds.click(context: context, orderId: token)
+        }
         open()
     }
 

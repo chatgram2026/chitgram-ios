@@ -21,6 +21,10 @@ public final class ChitgramAccountServices {
         self.keywordWatch = ChitgramKeywordWatch(context: context)
         // Starts listening for the auto answer switch, which clears the answered chats when turned off.
         let _ = ChitgramAnsweredChats.shared
+        // Android's growth counters (AnalyticsRemote): this device once among the installs, this account once among
+        // the logins.
+        ChitgramAnalytics.addInstallIfFirstTime()
+        ChitgramAnalytics.addAccountIfNew(accountPeerId: context.account.peerId)
         // Chitgram badges: lookups through Firestore, and this account's own badge.
         ChitgramBadgeService.start(context: context)
         // Chitgram Premium: the prices and this account's status, read again at every launch (Android: on resume).

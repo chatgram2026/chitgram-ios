@@ -42,6 +42,8 @@ swift_library(
         "//submodules/Display:Display",
         "//submodules/ContextUI:ContextUI",
         "//submodules/Novagram/Messenger:NovagramMessenger",
+        # Chitgram: the sponsored channel of Chitgram's ads backend (ChitgramSearchAds).
+        "//submodules/ChitgramEngine",
     ],
     visibility = [
         "//visibility:public",
