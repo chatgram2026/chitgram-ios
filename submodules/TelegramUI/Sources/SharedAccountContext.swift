@@ -7,6 +7,7 @@ import WebProxyTransport
 import Display
 import TelegramPresentationData
 import NovagramSecretVault
+import ChitgramCore
 import TelegramCallsUI
 import TelegramAudio
 import TelegramUIPreferences
@@ -1968,9 +1969,11 @@ public final class SharedAccountContextImpl: SharedAccountContext {
             queue: .mainQueue(),
             settings,
             self.activeAccountContexts,
-            updatedApsToken
+            updatedApsToken,
+            // Chitgram: the accounts whose notifications are off on this device.
+            ChitgramAccountNotifications.mutedUserIdsSignal
         )
-        |> mapToSignal { settings, activeAccountsAndInfo, apsNotificationToken -> Signal<(Bool, Data?), NoError> in
+        |> mapToSignal { settings, activeAccountsAndInfo, apsNotificationToken, chitgramMutedUserIds -> Signal<(Bool, Data?), NoError> in
             let (primary, activeAccounts, _) = activeAccountsAndInfo
             var appliedApsList: [Signal<Bool?, NoError>] = []
             var appliedVoipList: [Signal<Never, NoError>] = []
@@ -1994,6 +1997,10 @@ public final class SharedAccountContextImpl: SharedAccountContext {
                     activeTestingUserIds = []
                 }
             }
+            // Chitgram: an account whose notifications are off on this device (Android's switch on its row in
+            // Settings) keeps no push token here, so neither its messages nor its calls reach this device.
+            activeProductionUserIds.removeAll(where: { chitgramMutedUserIds.contains($0._internalGetInt64Value()) })
+            activeTestingUserIds.removeAll(where: { chitgramMutedUserIds.contains($0._internalGetInt64Value()) })
             
             for (_, account, _) in activeAccounts {
                 let appliedAps: Signal<Bool, NoError>

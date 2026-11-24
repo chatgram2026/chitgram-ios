@@ -1620,6 +1620,10 @@ public class ItemListPeerItemNode: ItemListRevealOptionsItemNode, ItemListItemNo
                     }
                     
                     var rightLabelInset: CGFloat = 15.0 + params.rightInset
+                    // Chitgram: a badge beside a switch (an account row in Settings) keeps clear of the switch.
+                    if let switchNode = strongSelf.switchNode, case .badge = item.label {
+                        rightLabelInset += switchNode.bounds.width + 10.0
+                    }
                     
                     if let updatedLabelArrowNode = updatedLabelArrowNode {
                         strongSelf.labelArrowNode = updatedLabelArrowNode
@@ -1973,6 +1977,10 @@ public class ItemListPeerItemNode: ItemListRevealOptionsItemNode, ItemListItemNo
         }
         
         var rightLabelInset: CGFloat = 15.0 + params.rightInset
+        // Chitgram: a badge beside a switch keeps clear of it (see the layout above).
+        if let switchNode = self.switchNode, case .badge = item.label {
+            rightLabelInset += switchNode.bounds.width + 10.0
+        }
         
         if let labelArrowNode = self.labelArrowNode {
             if let image = labelArrowNode.image {

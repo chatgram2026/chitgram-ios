@@ -141,6 +141,14 @@ func settingsItems(data: PeerInfoScreenData?, context: AccountContext, presentat
                     }
                 ))
                 let member: PeerInfoMember = .account(peer: EngineRenderedPeer(peer: peer))
+                // Chitgram: this account's notifications on this device (Android's switch at the end of the row).
+                let chitgramUserId = peerAccountContext.account.peerId.id._internalGetInt64Value()
+                let chitgramNotificationsSwitch: (value: Bool, toggle: (Bool) -> Void) = (
+                    value: ChitgramAccountNotifications.isEnabled(userId: chitgramUserId),
+                    toggle: { value in
+                        ChitgramAccountNotifications.setEnabled(value, userId: chitgramUserId)
+                    }
+                )
                 items[.accounts]!.append(PeerInfoScreenMemberItem(id: member.id, context: mappedContext, enclosingPeer: nil, member: member, badge: badgeCount > 0 ? "\(compactNumericCountString(Int(badgeCount), decimalSeparator: presentationData.dateTimeFormat.decimalSeparator))" : nil, isAccount: true, action: { action in
                     switch action {
                     case .open:
@@ -152,7 +160,7 @@ func settingsItems(data: PeerInfoScreenData?, context: AccountContext, presentat
                     }
                 }, contextAction: { node, gesture in
                     interaction.accountContextMenu(peerAccountContext.account.id, node, gesture)
-                }))
+                }, chitgramNotificationsSwitch: chitgramNotificationsSwitch))
             }
             
             // Novagram: only the live (working-set) accounts are listed above — this row opens the FULL

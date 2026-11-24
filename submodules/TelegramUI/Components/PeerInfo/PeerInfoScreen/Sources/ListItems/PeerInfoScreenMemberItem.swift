@@ -26,6 +26,8 @@ final class PeerInfoScreenMemberItem: PeerInfoScreenItem {
     let action: ((PeerInfoScreenMemberItemAction) -> Void)?
     let contextAction: ((ASDisplayNode, ContextGesture?) -> Void)?
     let openStories: ((UIView) -> Void)?
+    // Chitgram: an account row's notification switch (Android's switch at the end of the account's row).
+    let chitgramNotificationsSwitch: (value: Bool, toggle: (Bool) -> Void)?
     
     init(
         id: AnyHashable,
@@ -36,7 +38,8 @@ final class PeerInfoScreenMemberItem: PeerInfoScreenItem {
         isAccount: Bool,
         action: ((PeerInfoScreenMemberItemAction) -> Void)?,
         contextAction: ((ASDisplayNode, ContextGesture?) -> Void)? = nil,
-        openStories: ((UIView) -> Void)? = nil
+        openStories: ((UIView) -> Void)? = nil,
+        chitgramNotificationsSwitch: (value: Bool, toggle: (Bool) -> Void)? = nil
     ) {
         self.id = id
         self.context = context
@@ -47,6 +50,7 @@ final class PeerInfoScreenMemberItem: PeerInfoScreenItem {
         self.action = action
         self.contextAction = contextAction
         self.openStories = openStories
+        self.chitgramNotificationsSwitch = chitgramNotificationsSwitch
     }
     
     func node() -> PeerInfoScreenItemNode {
@@ -77,9 +81,13 @@ private final class PeerInfoScreenMemberItemNode: PeerInfoScreenItemNode {
         super.didLoad()
         
         let recognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapLongTapOrDoubleTapGesture(_:)))
-        recognizer.tapActionAtPoint = { [weak self] _ in
+        recognizer.tapActionAtPoint = { [weak self] point in
             // The embedded row owns taps that dismiss or activate its actions.
             if self?.itemNode?.isRevealOptionsActive == true {
+                return .fail
+            }
+            // Chitgram: a tap on the account's notification switch is the switch's alone.
+            if let self, let itemNode = self.itemNode, itemNode.view.hitTest(self.view.convert(point, to: itemNode.view), with: nil) is UIControl {
                 return .fail
             }
             return .keepWithSingleTap
@@ -207,11 +215,11 @@ private final class PeerInfoScreenMemberItemNode: PeerInfoScreenItemNode {
             itemText = .presence
         }
         
-        let peerItem = ItemListPeerItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, dateTimeFormat: presentationData.dateTimeFormat, nameDisplayOrder: presentationData.nameDisplayOrder, context: item.context, peer: item.member.peer, height: itemHeight, presence: item.member.presence.flatMap(EnginePeer.Presence.init), text: itemText, label: itemLabel, editing: ItemListPeerItemEditing(editable: !options.isEmpty, editing: false, revealed: nil), revealOptions: ItemListPeerItemRevealOptions(options: options), switchValue: nil, enabled: true, selectable: false, animateFirstAvatarTransition: !item.isAccount, sectionId: 0, action: nil, setPeerIdWithRevealedOptions: { lhs, rhs in
+        let peerItem = ItemListPeerItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, dateTimeFormat: presentationData.dateTimeFormat, nameDisplayOrder: presentationData.nameDisplayOrder, context: item.context, peer: item.member.peer, height: itemHeight, presence: item.member.presence.flatMap(EnginePeer.Presence.init), text: itemText, label: itemLabel, editing: ItemListPeerItemEditing(editable: !options.isEmpty, editing: false, revealed: nil), revealOptions: ItemListPeerItemRevealOptions(options: options), switchValue: item.chitgramNotificationsSwitch.map { ItemListPeerItemSwitch(value: $0.value, style: .standard) }, enabled: true, selectable: false, animateFirstAvatarTransition: !item.isAccount, sectionId: 0, action: nil, setPeerIdWithRevealedOptions: { lhs, rhs in
             
         }, removePeer: { _ in
             
-        }, contextAction: item.contextAction, hasTopStripe: false, hasTopGroupInset: false, noInsets: true, noCorners: true, displayDecorations: false, storyStats: item.member.storyStats, openStories: { [weak self] sourceView in
+        }, toggleUpdated: item.chitgramNotificationsSwitch?.toggle, contextAction: item.contextAction, hasTopStripe: false, hasTopGroupInset: false, noInsets: true, noCorners: true, displayDecorations: false, storyStats: item.member.storyStats, openStories: { [weak self] sourceView in
             guard let self, let item = self.item else {
                 return
             }
