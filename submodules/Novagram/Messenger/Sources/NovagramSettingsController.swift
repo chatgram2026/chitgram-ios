@@ -1794,6 +1794,26 @@ private func chitgramSwitchColor(_ key: String) -> NovagramIconColor {
     return key.hasPrefix("confirm") ? .orange : .gray
 }
 
+/// Chitgram: the tour in progress, kept while it runs.
+private final class ChitgramSettingsTourHolder {
+    var tour: ChitgramTour?
+}
+
+/// Chitgram: the tour's stops (Android `FenixSettings.fullSteps`), as this screen's rows, in its order.
+private let chitgramSettingsTourStops: [(feature: NovagramSettingsFeature, titleId: Int, bodyId: Int)] = [
+    (.deletedMessages, 31, 235),
+    (.ghostMode, 342, 343),
+    (.cameraPicker, 353, 354),
+    (.editedHistory, 23, 72),
+    (.hideFolders, 260, 261),
+    (.stories, 136, 137),
+    (.autoDownload, 183, 196),
+    (.sendConfirm, 190, 386),
+    (.hiddenChats, 213, 217),
+    (.reminder, 270, 271),
+    (.autoAccept, 263, 264)
+]
+
 private final class NovagramSettingsArguments {
     let openAccounts: () -> Void
     let openAbout: () -> Void
@@ -1925,6 +1945,8 @@ public func novagramSettingsController(context: AccountContext, highlightFeature
     }
 
     var pushControllerImpl: ((ViewController) -> Void)?
+    // Chitgram: Android's tour over this screen (FenixTour): the "?" replays it, and it plays once on the first open.
+    var startTourImpl: (() -> Void)?
     var presentControllerImpl: ((ViewController) -> Void)?
     // Feature #46: presents the plain-UIKit ChatPincodeViewController navVC on the app's root VC.
     // Display's present path can't host a raw UINavigationController, so we go through the window.
@@ -2680,7 +2702,9 @@ public func novagramSettingsController(context: AccountContext, highlightFeature
             NotificationCenter.default.removeObserver(developerFlagsObserver)
         }
         |> map { presentationData, state, carPlayStatus, callDataSaving, _ -> (ItemListControllerState, (ItemListNodeState, Any)) in
-            let controllerState = ItemListControllerState(presentationData: ItemListPresentationData(presentationData), title: .text("Chitgram"), leftNavigationButton: nil, rightNavigationButton: nil, backNavigationButton: ItemListBackButton(title: presentationData.strings.Common_Back))
+            let controllerState = ItemListControllerState(presentationData: ItemListPresentationData(presentationData), title: .text("Chitgram"), leftNavigationButton: nil, rightNavigationButton: ItemListNavigationButton(content: .text("?"), style: .regular, enabled: true, action: {
+                startTourImpl?()
+            }), backNavigationButton: ItemListBackButton(title: presentationData.strings.Common_Back))
             let entries = novagramSettingsEntries(presentationData: presentationData, state: state, carPlayStatus: carPlayStatus, callDataSaving: callDataSaving)
             _ = latestEntries.swap(entries)
             // ensureVisibleItemTag only reaches rows whose nodes already exist, so a row far down
@@ -2705,6 +2729,28 @@ public func novagramSettingsController(context: AccountContext, highlightFeature
         controller?.view.window?.rootViewController?.present(vc, animated: true)
     }
 
+    // Chitgram: the tour's stops (Android FenixSettings.fullSteps) on the rows this screen has; a stop whose row is
+    // not shown now is skipped.
+    let chitgramTourHolder = ChitgramSettingsTourHolder()
+    startTourImpl = { [weak controller] in
+        guard let controller, chitgramTourHolder.tour == nil else {
+            return
+        }
+        ChitgramStrings.setLanguageCode(context.sharedContext.currentPresentationData.with { $0 }.strings.primaryComponent.languageCode)
+        let shown = latestEntries.with { $0 }
+        let steps: [ChitgramTour.Step] = chitgramSettingsTourStops.compactMap { stop in
+            guard shown.contains(where: { $0.feature == stop.feature }) else {
+                return nil
+            }
+            return ChitgramTour.Step(tag: NovagramSettingsItemTag(feature: stop.feature), title: ChitgramStrings.get(stop.titleId), body: ChitgramStrings.get(stop.bodyId))
+        }
+        let tour = ChitgramTour(controller: controller, steps: steps)
+        chitgramTourHolder.tour = tour
+        tour.finished = {
+            chitgramTourHolder.tour = nil
+        }
+        tour.start()
+    }
     controller.didAppear = { [weak controller] firstTime in
         guard let controller else { return }
         // Feature #46: after the Chat Lock set/verify modal dismisses (success OR cancel) the
@@ -2717,6 +2763,14 @@ public func novagramSettingsController(context: AccountContext, highlightFeature
             refreshCallRecordings()
         })
         guard firstTime else { return }
+
+        // Chitgram: the tour plays once, on the first open of this screen (Android: the same).
+        if highlightFeature == nil && !UserDefaults.standard.bool(forKey: "chitgram_settings_tour_shown") {
+            UserDefaults.standard.set(true, forKey: "chitgram_settings_tour_shown")
+            Queue.mainQueue().after(0.6, {
+                startTourImpl?()
+            })
+        }
 
         // Feature #40 (part c): press and hold any row to copy or share a link to that row.
         // The title closure reads the entries built for the current language and state, so the
