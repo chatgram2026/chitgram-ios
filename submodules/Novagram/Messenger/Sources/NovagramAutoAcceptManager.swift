@@ -2,6 +2,7 @@ import Foundation
 import TelegramCore
 import AccountContext
 import SwiftSignalKit
+import ChitgramCore
 
 // Novagram Feature #45: auto-approve pending join requests for channels/groups the user admins.
 // Enabled by "fenix_autoaccept_global" in the "pro_messager" UserDefaults suite.
@@ -103,6 +104,8 @@ public final class NovagramAutoAcceptManager {
 
     /// Read cached data for the peer and approve all requests only if some are pending.
     private static func approveIfPending(context: AccountContext, peerId: EnginePeer.Id) {
+        // Chitgram: only where the user wants it (Android AutoAcceptJoin: all chats, or the ones picked).
+        guard ChitgramAutoAccept.isChosen(account: context.account.peerId.toInt64(), chat: peerId.toInt64()) else { return }
         let now = Int32(Date().timeIntervalSince1970)
         if let last = lastApprovedAt[peerId], now - last < cooldownSeconds { return }
 
