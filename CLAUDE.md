@@ -30,10 +30,19 @@ unread reminder, auto-accept, …). Branch **`chitgram-nova`** starts from it.
   `ChitgramSettings` (the Premium page only), `TelegramCore/Sources/Chitgram` (channel posts, paid reaction, scheduled
   copies), `Images.xcassets/Chitgram`. Settings shows "Chitgram Premium" under "Chitgram Settings"
   (`PeerInfoSettingsSection.chitgramPremium`). The TL schema is identical to the old port's (layer 232).
-- **The earlier port** (Telegram 13.1.2 + our own `Chitgram…` modules) is kept on `chitgram` / `chitgram-next`. Its
-  other Chitgram-only features still have to be brought over: voice and video roulettes, auto messenger, chat finder, badges, big files, APK shield, share categories, the tab bar
-  editor, keyword watcher, auto answer, and the Android **layout** (the "Chitgram" section in Settings with its rows,
-  the Sozlamalar screen) in place of Novagram's "Novagram Settings" screen.
+- **The earlier port** (Telegram 13.1.2 + our own `Chitgram…` modules) is kept on `chitgram` / `chitgram-next`; its
+  code built green there, so features are brought over from it file by file (check with a missing-names scan against
+  `origin/chitgram`). Brought over by 2026-11-24 (not yet built, the last build is TestFlight 23 = 3c867024): About,
+  the badge before Premium names, auto messenger, keyword watch, auto answer, chat finder, share categories, the tab
+  bar editor (order, hidden tabs, start tab; Android's extra button and tab names not yet), Android's "Chitgram"
+  section in Settings (header and rows in Android's order). Still to do: the roulettes (their rows say "Coming soon"
+  (447) by the owner's choice), big files, the auto-accept chat picker, per-chat items (chat id, join requests sheet,
+  join with all accounts), and the Sozlamalar screen's Android section layout (today Novagram's screen, titled
+  "Chitgram"). APK shield: not wanted on iOS (owner).
+- **Free builds:** `.github/workflows/chitgram-testflight.yml` does codemagic.yaml's TestFlight build on GitHub's
+  free runners (started by hand; registered on the default branch `chitgram`). GitHub has paused Actions on this
+  fork ("due to the scale of GitHub Actions usage"); only the owner can re-enable it, and it needs the repository
+  secrets listed at its top, including a new App Store Connect API key.
 - Persisted Novagram identifiers (`pro_messager` suite, `fenix_*` keys, `uz.fenixuz.app.ChatLock` keychain service)
   stay as they are: they are internal names, and the iOS app has no users yet.
 
