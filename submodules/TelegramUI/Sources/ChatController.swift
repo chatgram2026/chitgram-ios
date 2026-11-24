@@ -909,6 +909,11 @@ public final class ChatControllerImpl: TelegramBaseController, ChatController, G
                 return true
             }
 
+            // Chitgram: one part of a split big file opens the whole file (Android BigFile).
+            if self.chitgramOpenSplitFile(message: EngineMessage(message)) {
+                return true
+            }
+
             if case .standard(.previewing) = self.presentationInterfaceState.mode {
                 self.ignorePreviewTap = true
                 Queue.mainQueue().after(0.5) { [weak self] in
