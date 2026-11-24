@@ -34,11 +34,13 @@ unread reminder, auto-accept, …). Branch **`chitgram-nova`** starts from it.
   code built green there, so features are brought over from it file by file (check with a missing-names scan against
   `origin/chitgram`). Brought over by 2026-11-24 (not yet built, the last build is TestFlight 23 = 3c867024): About,
   the badge before Premium names, auto messenger, keyword watch, auto answer, chat finder, share categories, the tab
-  bar editor (order, hidden tabs, start tab; Android's extra button and tab names not yet), Android's "Chitgram"
-  section in Settings (header and rows in Android's order). Still to do: the roulettes (their rows say "Coming soon"
-  (447) by the owner's choice), big files, the auto-accept chat picker, per-chat items (chat id, join requests sheet,
-  join with all accounts), and the Sozlamalar screen's Android section layout (today Novagram's screen, titled
-  "Chitgram"). APK shield: not wanted on iOS (owner).
+  bar editor (order, hidden tabs, start tab, tab names), Android's "Chitgram" section in Settings, ghost switches and
+  confirmations, the tour, big files, the auto-accept chat picker, per-chat items (chat id, one-time media, join
+  requests, join with all accounts), the account limit, Android's app icons, the sponsored search result and growth
+  counters, the region auto-proxy, the per-account notification switch, and the Sozlamalar screen in Android's
+  section order. OCR: Telegram's own photo text recognition (copy, share, translate) covers it. Still to do: the
+  roulettes (their rows say "Coming soon" (447) by the owner's choice). Not on iOS: APK shield (owner), Android's
+  extra tab button (Novagram's search button beside the tabs stands for it).
 - **Free builds:** `.github/workflows/chitgram-testflight.yml` does codemagic.yaml's TestFlight build on GitHub's
   free runners (started by hand; registered on the default branch `chitgram`). GitHub has paused Actions on this
   fork ("due to the scale of GitHub Actions usage"); only the owner can re-enable it, and it needs the repository
