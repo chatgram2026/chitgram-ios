@@ -20,6 +20,7 @@ import NovagramMessenger
 import ChitgramSettings
 import ChitgramCore
 import StorageUsageScreen
+import ChitgramEngine
 import WalletContext
 import UndoUI
 
@@ -259,22 +260,27 @@ extension PeerInfoScreenNode {
                 guard let strongSelf = self else {
                     return
                 }
-                // Novagram: use the fork-wide account limit instead of the upstream 3/4 premium gate.
-                var maximumAvailableAccounts: Int = maximumNumberOfAccounts
-                if accountAndPeer?.1.isPremium == true && !strongSelf.context.account.testingEnvironment {
-                    maximumAvailableAccounts = maximumPremiumNumberOfAccounts
-                }
+                // Chitgram: 10 accounts, 32 with Chitgram Premium on any of them (Android UserConfig
+                // MAX_ACCOUNT_DEFAULT_COUNT / MAX_ACCOUNT_COUNT); over the limit Android's notice (AccountLimit).
+                var hasChitgramPremium = ChitgramPremium.isActive(accountPeerId: strongSelf.context.account.peerId)
                 var count: Int = 1
-                for (accountContext, peer, _) in accountsAndPeers {
+                for (accountContext, _, _) in accountsAndPeers {
                     if !accountContext.account.testingEnvironment {
-                        if peer.isPremium {
-                            maximumAvailableAccounts = maximumPremiumNumberOfAccounts
+                        if ChitgramPremium.isActive(accountPeerId: accountContext.account.peerId) {
+                            hasChitgramPremium = true
                         }
                         count += 1
                     }
                 }
+                let maximumAvailableAccounts = hasChitgramPremium ? ChitgramLimits.premiumAccounts : ChitgramLimits.freeAccounts
                 
                 if count >= maximumAvailableAccounts {
+                    chitgramShowAccountLimit(context: strongSelf.context, hasPremium: hasChitgramPremium, present: { [weak strongSelf] c in
+                        strongSelf?.controller?.present(c, in: .window(.root))
+                    }, push: { [weak strongSelf] c in
+                        strongSelf?.controller?.push(c)
+                    })
+                } else if count >= Int.max {
                     var replaceImpl: ((ViewController) -> Void)?
                     let controller = PremiumLimitScreen(context: strongSelf.context, subject: .accounts, count: Int32(count), action: {
                         let controller = PremiumIntroScreen(context: strongSelf.context, source: .accounts)

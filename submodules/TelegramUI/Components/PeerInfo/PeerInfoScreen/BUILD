@@ -105,6 +105,7 @@ swift_library(
         "//submodules/Novagram/Messenger:NovagramMessenger",
         "//submodules/ChitgramCore",
         "//submodules/ChitgramSettings",
+        "//submodules/ChitgramEngine",
         "//submodules/Novagram/Localization:NovagramLocalization",
         "//submodules/Novagram/Analytics:NovagramAnalytics",
         "//submodules/Novagram/UpdateCheck:NovagramUpdateCheck",
