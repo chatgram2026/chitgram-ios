@@ -96,8 +96,10 @@ private enum NovagramEntry: ItemListNodeEntry {
     case autoAnswer(PresentationTheme, String, String, Bool)
     case autoAnswerText(PresentationTheme, String)
     // Chitgram: a switch of Android's kept in Chitgram's store (synced with Android): theme, stable id, key, title,
-    // text, value. Ids below 220 sit in the chat section (ghost), the others in the protection section.
+    // text, value. `chitgramAndroidPlace` puts each in its Android section (ghost: Privacy; 230…: confirmations).
     case chitgramSwitch(PresentationTheme, Int32, String, String, String, Bool)
+    // Chitgram: the header of one of Android's sections (its index in `chitgramAndroidSectionTitles`, its title).
+    case chitgramHeader(Int32, String)
     // Chitgram: the keyword watch (Android: Chitgram settings, "Keyword watch").
     case keywordWatch(PresentationTheme, String)
     case messagingFooter(PresentationTheme, String)
@@ -196,7 +198,13 @@ private enum NovagramEntry: ItemListNodeEntry {
     case novagramBots(PresentationTheme, String)
 
     var section: ItemListSectionId {
+        // Chitgram: the rows Android has sit in Android's sections (FenixSettings).
+        if let place = chitgramAndroidPlace(self) {
+            return place.section
+        }
         switch self {
+        case let .chitgramHeader(index, _):
+            return chitgramAndroidSectionId(index)
         case .chatHeader, .calls, .deletedMessages, .showViewFirstMessage, .showGhostMode, .longPressCameraSelection, .editedHistoryEnabled, .roundVideoFromGallery, .forwardHideNames, .callRecording, .chatFooter:
             return NovagramSection.chat.rawValue
         case .interfaceHeader, .hideFolders, .showStories, .showMutualContactSymbol, .unlimitedPins, .tabBarEditor, .interfaceFooter:
@@ -230,6 +238,8 @@ private enum NovagramEntry: ItemListNodeEntry {
 
     var stableId: Int32 {
         switch self {
+        case let .chitgramHeader(index, _):
+            return 400 + index
         // Chat
         case .chatHeader:                return 0
         case .calls:                     return 1
@@ -336,7 +346,13 @@ private enum NovagramEntry: ItemListNodeEntry {
     // the Developer section (ids 93–98, spread by 10), before the Developer footer. "Call recording" (id 55) is
     // approved since 2026-11-02 and sits at the end of the Chat section, before the Chat footer (id 9).
     var sortId: Int {
+        // Chitgram: Android's sections come first, each in Android's order; Novagram's other rows follow.
+        if let place = chitgramAndroidPlace(self) {
+            return place.order
+        }
         switch self {
+        case let .chitgramHeader(index, _):
+            return chitgramAndroidOrder(index, 0)
         case .callDataSaving:
             return 97 * 10 + 5
         case .callRecording:
@@ -361,6 +377,8 @@ private enum NovagramEntry: ItemListNodeEntry {
 
     static func == (lhs: NovagramEntry, rhs: NovagramEntry) -> Bool {
         switch lhs {
+        case let .chitgramHeader(lhsIndex, lhsText):
+            if case let .chitgramHeader(rhsIndex, rhsText) = rhs, lhsIndex == rhsIndex, lhsText == rhsText { return true } else { return false }
         case let .chatHeader(lhsText):
             if case let .chatHeader(rhsText) = rhs, lhsText == rhsText { return true } else { return false }
         case let .calls(lhsTheme, lhsTitle):
@@ -636,6 +654,8 @@ private enum NovagramEntry: ItemListNodeEntry {
     func item(presentationData: ItemListPresentationData, arguments: Any) -> ListViewItem {
         let arguments = arguments as! NovagramSettingsArguments
         switch self {
+        case let .chitgramHeader(_, text):
+            return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
         // ─── ACCOUNTLAR ───
         case let .accountsHeader(text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
@@ -1777,9 +1797,158 @@ private func novagramSettingsEntries(presentationData: PresentationData, state: 
         entries.append(.developerFooter(presentationData.theme, NovagramDeveloperStrings.footer(langCode: langCode)))
     }
 
+    // Chitgram: Android's layout (FenixSettings): its sections first, under its headers; Novagram's other rows
+    // follow in their own sections.
+    entries = chitgramAndroidLayout(entries)
+
     // ItemListController entries should arrive in stableId order to avoid an
     // assertion. Section visual order is controlled by stableId numbering.
     return entries.sorted()
+}
+
+/// Chitgram: the sections of Android's Chitgram settings screen (FenixSettings), in its order, by their titles' ids.
+/// A section with no row here (the voice changer, the message field) gets no header.
+private let chitgramAndroidSectionTitles: [Int] = [135, 234, 237, 228, 244, 190, 810, 353, 380, 240, 262, 269, 318, 356]
+
+private func chitgramAndroidSectionId(_ index: Int32) -> ItemListSectionId {
+    return 100 + index
+}
+
+/// A row's place in the list: Android's sections come before all of Novagram's (whose places start at -40).
+private func chitgramAndroidOrder(_ index: Int32, _ rank: Int) -> Int {
+    return -100_000 + Int(index) * 1_000 + rank
+}
+
+/// Where Android shows a row: its section and place, nil for a Novagram row Android does not have.
+private func chitgramAndroidPlace(_ entry: NovagramEntry) -> (section: ItemListSectionId, order: Int)? {
+    let place: (index: Int32, rank: Int)?
+    switch entry {
+    // Stories: anonymous viewing, the stories panel, saving stories.
+    case let .chitgramSwitch(_, id, _, _, _, _) where id == 214:
+        place = (0, 10)
+    case .showStories:
+        place = (0, 20)
+    case .storyUnlockEnabled:
+        place = (0, 30)
+    // Messages: edited and deleted messages kept.
+    case .editedHistoryEnabled:
+        place = (1, 10)
+    case .deletedMessages:
+        place = (1, 20)
+    case .showViewFirstMessage:
+        place = (1, 30)
+    // Download.
+    case .autoDownloadDisabled:
+        place = (2, 10)
+    // Auto answer.
+    case .autoAnswer:
+        place = (3, 10)
+    case .autoAnswerText:
+        place = (3, 20)
+    case .keywordWatch:
+        place = (3, 30)
+    // Privacy: the ghost switches, the ghost button, chat lock.
+    case let .chitgramSwitch(_, id, _, _, _, _) where id >= 210 && id <= 213:
+        place = (4, Int(id - 209) * 10)
+    case .showGhostMode:
+        place = (4, 50)
+    case .chatLockMasterEnabled:
+        place = (4, 60)
+    // Confirmation dialogs.
+    case let .chitgramSwitch(_, id, _, _, _, _) where id >= 230 && id <= 232:
+        place = (5, Int(id - 229) * 10)
+    case .sendConfirmEnabled:
+        place = (5, 40)
+    // Round video.
+    case .longPressCameraSelection:
+        place = (7, 10)
+    case .roundVideoFromGallery:
+        place = (7, 20)
+    // Folders and the tab bar.
+    case .folderStyle:
+        place = (9, 10)
+    case .hideFolders:
+        place = (9, 20)
+    case .tabBarEditor:
+        place = (9, 30)
+    case .adminFolders:
+        place = (9, 40)
+    case .addRecommendedFolders:
+        place = (9, 50)
+    case .foldersPrompt:
+        place = (9, 60)
+    // Channels: join requests.
+    case .autoAcceptRequests:
+        place = (10, 10)
+    case .autoAcceptChats:
+        place = (10, 20)
+    case .channelHistoryButton:
+        place = (10, 30)
+    // Message reminder.
+    case .reminderEnabled:
+        place = (11, 10)
+    case .reminderTime:
+        place = (11, 20)
+    case .reminderSound:
+        place = (11, 30)
+    case .reminderFooter:
+        place = (11, 900)
+    // Security.
+    case .blockForeignUsers:
+        place = (12, 10)
+    // Support.
+    case .aboutRow:
+        place = (13, 10)
+    default:
+        place = nil
+    }
+    guard let place else {
+        return nil
+    }
+    return (chitgramAndroidSectionId(place.index), chitgramAndroidOrder(place.index, place.rank))
+}
+
+/// A Novagram section's header or footer.
+private func chitgramIsNovagramDecoration(_ entry: NovagramEntry) -> Bool {
+    switch entry {
+    case .chatHeader, .chatFooter, .interfaceHeader, .interfaceFooter, .messagingHeader, .messagingFooter, .sttHeader,
+         .carPlayHeader, .carPlayFooter, .protectionHeader, .protectionFooter, .appearanceHeader, .appearanceFooter,
+         .chatLockHeader, .chatLockFooter, .secretVaultFooter, .reminderHeader, .reminderFooter, .featuresHeader,
+         .featuresFooter, .developerHeader, .developerFooter, .accountsHeader:
+        return true
+    default:
+        return false
+    }
+}
+
+/// Android's headers over the sections that have rows, and no header or footer over a Novagram section whose rows
+/// all moved to Android's.
+private func chitgramAndroidLayout(_ entries: [NovagramEntry]) -> [NovagramEntry] {
+    var androidSections = Set<ItemListSectionId>()
+    var novagramSectionsWithRows = Set<ItemListSectionId>()
+    for entry in entries {
+        if let place = chitgramAndroidPlace(entry) {
+            androidSections.insert(place.section)
+        } else if !chitgramIsNovagramDecoration(entry) {
+            novagramSectionsWithRows.insert(entry.section)
+        }
+    }
+    var result = entries.filter { entry in
+        return chitgramAndroidPlace(entry) != nil || !chitgramIsNovagramDecoration(entry) || novagramSectionsWithRows.contains(entry.section)
+    }
+    for (offset, titleId) in chitgramAndroidSectionTitles.enumerated() {
+        let index = Int32(offset)
+        if androidSections.contains(chitgramAndroidSectionId(index)) {
+            result.append(.chitgramHeader(index, ChitgramStrings.get(titleId)))
+        }
+    }
+    return result
+}
+
+/// Chitgram: Android's title of this screen (FenixSettings: "Sozlamalar").
+private func chitgramSettingsTitle(_ presentationData: PresentationData) -> String {
+    ChitgramStrings.setLanguageCode(presentationData.strings.primaryComponent.languageCode)
+    return ChitgramStrings.get(236)
 }
 
 /// Chitgram: the icon of a `chitgramSwitch` row.
@@ -1819,18 +1988,19 @@ private final class ChitgramSettingsTourHolder {
 }
 
 /// Chitgram: the tour's stops (Android `FenixSettings.fullSteps`), as this screen's rows, in its order.
+// In the list's order (Android's sections first), so the tour never scrolls back (Android FenixSettings.fullSteps).
 private let chitgramSettingsTourStops: [(feature: NovagramSettingsFeature, titleId: Int, bodyId: Int)] = [
-    (.deletedMessages, 31, 235),
-    (.ghostMode, 342, 343),
-    (.cameraPicker, 353, 354),
-    (.editedHistory, 23, 72),
-    (.hideFolders, 260, 261),
     (.stories, 136, 137),
+    (.editedHistory, 23, 72),
+    (.deletedMessages, 31, 235),
     (.autoDownload, 183, 196),
+    (.ghostMode, 342, 343),
     (.sendConfirm, 190, 386),
-    (.hiddenChats, 213, 217),
+    (.cameraPicker, 353, 354),
+    (.hideFolders, 260, 261),
+    (.autoAccept, 263, 264),
     (.reminder, 270, 271),
-    (.autoAccept, 263, 264)
+    (.hiddenChats, 213, 217)
 ]
 
 private final class NovagramSettingsArguments {
@@ -2727,7 +2897,7 @@ public func novagramSettingsController(context: AccountContext, highlightFeature
             NotificationCenter.default.removeObserver(developerFlagsObserver)
         }
         |> map { presentationData, state, carPlayStatus, callDataSaving, _ -> (ItemListControllerState, (ItemListNodeState, Any)) in
-            let controllerState = ItemListControllerState(presentationData: ItemListPresentationData(presentationData), title: .text("Chitgram"), leftNavigationButton: nil, rightNavigationButton: ItemListNavigationButton(content: .text("?"), style: .regular, enabled: true, action: {
+            let controllerState = ItemListControllerState(presentationData: ItemListPresentationData(presentationData), title: .text(chitgramSettingsTitle(presentationData)), leftNavigationButton: nil, rightNavigationButton: ItemListNavigationButton(content: .text("?"), style: .regular, enabled: true, action: {
                 startTourImpl?()
             }), backNavigationButton: ItemListBackButton(title: presentationData.strings.Common_Back))
             let entries = novagramSettingsEntries(presentationData: presentationData, state: state, carPlayStatus: carPlayStatus, callDataSaving: callDataSaving)
