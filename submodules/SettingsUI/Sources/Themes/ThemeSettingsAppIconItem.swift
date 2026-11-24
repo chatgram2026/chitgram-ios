@@ -9,6 +9,7 @@ import ItemListUI
 import PresentationDataUtils
 import AppBundle
 import NovagramLocalization
+import ChitgramCore
 
 private func generateBorderImage(theme: PresentationTheme, bordered: Bool, selected: Bool) -> UIImage? {
     return generateImage(CGSize(width: 30.0, height: 30.0), rotatedContext: { size, context in
@@ -393,7 +394,8 @@ class ThemeSettingsAppIconItemNode: ListViewItemNode, ItemListItemNode {
                                 case "NovaOrangeIcon": name = novagramL10n.iconName_orange
                                 case "NovaBlackIcon": name = novagramL10n.iconName_black
                                 case "NovaRedIcon": name = novagramL10n.iconName_red
-                                default: name = icon.name
+                                // Chitgram: Android's icon names.
+                                default: name = chitgramAppIconTitle(icon.name) ?? icon.name
                             }
                         
                             imageNode.setup(theme: item.theme, icon: image, title: NSAttributedString(string: name, font: selected ? selectedTextFont : textFont, textColor: selected  ? item.theme.list.itemAccentColor : item.theme.list.itemPrimaryTextColor, paragraphAlignment: .center), locked: !item.isPremium && icon.isPremium, color: item.theme.list.itemPrimaryTextColor, bordered: bordered, selected: selected, action: {

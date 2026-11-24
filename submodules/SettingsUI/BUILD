@@ -152,6 +152,7 @@ swift_library(
         "//submodules/TelegramUI/Components/ListActionItemComponent",
         "//submodules/Utils/DeviceModel",
         "//submodules/Novagram/Localization:NovagramLocalization",
+        "//submodules/ChitgramCore",
         "//submodules/Novagram/Analytics:NovagramAnalytics",
         "//submodules/PasscodeCore",
         "//submodules/WalletContext",

@@ -1,6 +1,70 @@
 import Foundation
 
-/// The alternate home screen icons Chitgram offers in Appearance ▸ App Icon. Telegram's own (its logo in several
-/// colours) are never offered; Chitgram's colour variants from the Android app join this set when they are added.
-/// While it is empty the picker is not shown at all.
-public let chitgramAppIconNames: Set<String> = []
+/// The home screen icons Chitgram offers in Appearance ▸ App Icon, in Android's order (`LauncherIconController`): the
+/// Chitgram mark on each of Android's colours. Each name is a `Telegram/Telegram-iOS/<name>.alticon` folder made from
+/// Android's adaptive icon (its background under the white "Ch"). The first one is the app's own icon, so choosing it
+/// puts the primary icon back.
+public let chitgramAppIcons: [String] = [
+    "ChitgramDefaultIcon",
+    "ChitgramAmethystIcon",
+    "ChitgramEmeraldIcon",
+    "ChitgramCrimsonIcon",
+    "ChitgramMintIcon",
+    "ChitgramVioletIcon",
+    "ChitgramCherryIcon",
+    "ChitgramGoldIcon",
+    "ChitgramGreenIcon",
+    "ChitgramJadeIcon",
+    "ChitgramSkyIcon",
+    "ChitgramIndigoIcon",
+    "ChitgramPremiumIcon",
+    "ChitgramFireIcon",
+    "ChitgramOceanIcon",
+    "ChitgramSunsetIcon",
+    "ChitgramBlackIcon",
+    "ChitgramCoffeeIcon"
+]
+
+public let chitgramAppIconNames: Set<String> = Set(chitgramAppIcons)
+
+/// The icon's name under its picture (Android `LauncherIcon.chitgramTitle`), nil for an icon that is not Chitgram's.
+public func chitgramAppIconTitle(_ name: String) -> String? {
+    let ids: [String: Int] = [
+        "ChitgramDefaultIcon": 669,
+        "ChitgramAmethystIcon": 670,
+        "ChitgramEmeraldIcon": 671,
+        "ChitgramCrimsonIcon": 672,
+        "ChitgramMintIcon": 673,
+        "ChitgramVioletIcon": 674,
+        "ChitgramCherryIcon": 688,
+        "ChitgramGoldIcon": 689,
+        "ChitgramGreenIcon": 690,
+        "ChitgramJadeIcon": 691,
+        "ChitgramSkyIcon": 692,
+        "ChitgramIndigoIcon": 693,
+        "ChitgramPremiumIcon": 694,
+        "ChitgramFireIcon": 695,
+        "ChitgramOceanIcon": 696,
+        "ChitgramSunsetIcon": 697
+    ]
+    if let id = ids[name] {
+        return ChitgramStrings.get(id)
+    }
+    // Android's ids 862 and 863 are newer than this app's copy of the table.
+    switch (name, ChitgramStrings.language) {
+    case ("ChitgramBlackIcon", .uz):
+        return "Qora"
+    case ("ChitgramBlackIcon", .ru):
+        return "Чёрный"
+    case ("ChitgramBlackIcon", .en):
+        return "Black"
+    case ("ChitgramCoffeeIcon", .uz):
+        return "Qahva"
+    case ("ChitgramCoffeeIcon", .ru):
+        return "Кофе"
+    case ("ChitgramCoffeeIcon", .en):
+        return "Coffee"
+    default:
+        return nil
+    }
+}

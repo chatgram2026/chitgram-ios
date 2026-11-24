@@ -336,8 +336,28 @@ filegroup(
     ]),
 )
 
-# Chitgram: Novagram's alternate icons carry its brand, so the app has only its own icon.
-alternate_icon_folders = []
+# Chitgram: Android's icons (LauncherIconController), the Chitgram mark on each of its colours, made from Android's
+# adaptive icons; ChitgramCore/Sources/ChitgramAppIcons.swift lists them for the picker.
+alternate_icon_folders = [
+    "ChitgramDefaultIcon",
+    "ChitgramAmethystIcon",
+    "ChitgramEmeraldIcon",
+    "ChitgramCrimsonIcon",
+    "ChitgramMintIcon",
+    "ChitgramVioletIcon",
+    "ChitgramCherryIcon",
+    "ChitgramGoldIcon",
+    "ChitgramGreenIcon",
+    "ChitgramJadeIcon",
+    "ChitgramSkyIcon",
+    "ChitgramIndigoIcon",
+    "ChitgramPremiumIcon",
+    "ChitgramFireIcon",
+    "ChitgramOceanIcon",
+    "ChitgramSunsetIcon",
+    "ChitgramBlackIcon",
+    "ChitgramCoffeeIcon",
+]
 
 # Chitgram: the home screen icon (Telegram-iOS/Chitgram.icon, made from the owner's logo).
 composer_icon_folders = ["Chitgram"]

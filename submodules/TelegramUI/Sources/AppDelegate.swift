@@ -1027,8 +1027,10 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
         }, dismissNativeController: {
             self.window?.rootViewController?.dismiss(animated: true, completion: nil)
         }, getAvailableAlternateIcons: {
-            // Chitgram: one icon, no alternates (Novagram's carried its brand), so the icon picker stays hidden.
-            return []
+            // Chitgram: Android's icons; the first is the app's own, so choosing it puts the primary icon back.
+            return chitgramAppIcons.enumerated().map { index, name in
+                return PresentationAppIcon(name: name, imageName: name, isDefault: index == 0)
+            }
         }, getAlternateIconName: {
             if #available(iOS 10.3, *) {
                 return application.alternateIconName
