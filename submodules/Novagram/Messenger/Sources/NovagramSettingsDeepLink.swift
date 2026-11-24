@@ -140,8 +140,9 @@ public enum NovagramSettingsDeepLink {
         case feature(NovagramSettingsFeature)
     }
 
-    /// First path component of every Novagram settings link. Also the legacy bare link.
-    public static let rootPath = "novagrampro"
+    /// First path component of every settings link (Chitgram: "chitgram"; Novagram's "novagrampro" still opens it).
+    public static let rootPath = "chitgram"
+    private static let legacyRootPath = "novagrampro"
     /// Query parameter accepted by the `?f=<slug>` alias.
     public static let featureQueryKey = "f"
 
@@ -161,7 +162,7 @@ public enum NovagramSettingsDeepLink {
     /// Returns nil when the path belongs to Telegram's own settings deep links.
     public static func target(forSettingsPath path: String) -> Target? {
         let components = path.split(separator: "/").map(String.init)
-        guard let root = components.first, root.lowercased() == self.rootPath else {
+        guard let root = components.first, root.lowercased() == self.rootPath || root.lowercased() == self.legacyRootPath else {
             return nil
         }
         guard components.count > 1 else {
@@ -180,7 +181,7 @@ public enum NovagramSettingsDeepLink {
     /// Returns nil when the URL is not ours, so the caller can fall through untouched.
     public static func settingsPath(forUrlPath urlPath: String, featureParameter: String?) -> String? {
         let components = urlPath.split(separator: "/").map(String.init)
-        guard components.count == 1, components[0].lowercased() == self.rootPath else {
+        guard components.count == 1, components[0].lowercased() == self.rootPath || components[0].lowercased() == self.legacyRootPath else {
             return nil
         }
         guard let featureParameter, let feature = NovagramSettingsFeature(rawValue: featureParameter.lowercased()) else {

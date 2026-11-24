@@ -834,10 +834,10 @@ private func allFeatureSpecs() -> [FeatureSpec] {
                 zh: "无需开启。设置 → Chitgram → 功能中有“分享 Chitgram 设置链接”一行，其他每一行也都支持长按。"
             ),
             works: L3(
-                en: "The share row copies and shares tg://settings/novagrampro, which opens this settings screen. Press and hold any row instead and you get tg://settings/novagrampro/<feature> — that link opens the screen, scrolls straight to that row and traces an outline around it.",
-                uz: "Ulashish qatori tg://settings/novagrampro havolasini nusxalab ulashadi — u shu sozlamalar ekranini ochadi. Istalgan qatorni bosib tursangiz esa tg://settings/novagrampro/<feature> havolasini olasiz — u ekranni ochib, to'g'ridan-to'g'ri o'sha qatorga o'tadi va uning atrofida chiziq chizadi.",
-                ru: "Строка отправки копирует и отправляет tg://settings/novagrampro — она открывает этот экран настроек. А если нажать и удерживать любую строку, вы получите tg://settings/novagrampro/<feature> — такая ссылка открывает экран, прокручивает прямо к этой строке и обводит её контуром.",
-                zh: "分享行会复制并分享 tg://settings/novagrampro，该链接可打开此设置页面。若改为长按任意一行，则会得到 tg://settings/novagrampro/<feature>，该链接会打开此页面，直接滚动到那一行，并在其周围描出轮廓。"
+                en: "The share row copies and shares tg://settings/chitgram, which opens this settings screen. Press and hold any row instead and you get tg://settings/chitgram/<feature> — that link opens the screen, scrolls straight to that row and traces an outline around it.",
+                uz: "Ulashish qatori tg://settings/chitgram havolasini nusxalab ulashadi — u shu sozlamalar ekranini ochadi. Istalgan qatorni bosib tursangiz esa tg://settings/chitgram/<feature> havolasini olasiz — u ekranni ochib, to'g'ridan-to'g'ri o'sha qatorga o'tadi va uning atrofida chiziq chizadi.",
+                ru: "Строка отправки копирует и отправляет tg://settings/chitgram — она открывает этот экран настроек. А если нажать и удерживать любую строку, вы получите tg://settings/chitgram/<feature> — такая ссылка открывает экран, прокручивает прямо к этой строке и обводит её контуром.",
+                zh: "分享行会复制并分享 tg://settings/chitgram，该链接可打开此设置页面。若改为长按任意一行，则会得到 tg://settings/chitgram/<feature>，该链接会打开此页面，直接滚动到那一行，并在其周围描出轮廓。"
             ),
             disable: L3(
                 en: "Nothing to turn off — links are only created when you ask for one.",

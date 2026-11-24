@@ -4001,7 +4001,7 @@ Unused sets are archived when you add more.";
 "AttachmentMenu.WebSearch" = "Web Search";
 
 "Conversation.UnsupportedMediaPlaceholder" = "This message is not supported on your version of Telegram. Please update to the latest version.";
-"Conversation.UpdateTelegram" = "UPDATE NOVAGRAM";
+"Conversation.UpdateTelegram" = "UPDATE CHITGRAM";
 "Conversation.UnsupportedMedia.Title" = "Unsupported message";
 "Conversation.UnsupportedMedia.Text" = "Update Chitgram to view this message";
 "Conversation.UnsupportedMedia.Action" = "Update";
@@ -4447,7 +4447,7 @@ Unused sets are archived when you add more.";
 
 "Undo.ChatDeletedForBothSides" = "Chat deleted for both sides";
 
-"AppUpgrade.Running" = "Optimizing Novagram...
+"AppUpgrade.Running" = "Optimizing Chitgram...
 This may take a while, depending on the size of the database. Please keep the app open until the process is finished.
 
 Sorry for the inconvenience.";
@@ -7567,7 +7567,7 @@ Sorry for the inconvenience.";
 "WebApp.RemoveConfirmationText" = "Remove **%@** from the attachment menu?";
 
 "Notifications.SystemTones" = "SYSTEM TONES";
-"Notifications.TelegramTones" = "NOVAGRAM TONES";
+"Notifications.TelegramTones" = "CHITGRAM TONES";
 
 "Notifications.UploadSound" = "Upload Sound";
 "Notifications.MessageSoundInfo" = "Press and hold a short voice note or mp3 file in any chat and select \"Save for Notifications\". It will appear here.";

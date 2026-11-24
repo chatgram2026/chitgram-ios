@@ -10,14 +10,17 @@ import ChitgramCore
 /// On the Novagram base (branch chitgram-nova) only Chitgram Premium and what follows it run here: the prices and this
 /// account's status, the badges, the owner's notices from the channel pins and the settings shared with the account's
 /// other devices (the Premium payment locks among them). Novagram's own modules do the rest of the old port's work
-/// (auto accept, admin folders, unread reminder). The auto messenger and the keyword watch run here too; the auto
-/// answer is not ported yet.
+/// (auto accept, admin folders, unread reminder). The auto answer, the auto messenger and the keyword watch run here.
 public final class ChitgramAccountServices {
+    private let autoAnswer: ChitgramAutoAnswer
     private let keywordWatch: ChitgramKeywordWatch
     private var foregroundObserver: NSObjectProtocol?
 
     public init(context: AccountContext) {
+        self.autoAnswer = ChitgramAutoAnswer(context: context)
         self.keywordWatch = ChitgramKeywordWatch(context: context)
+        // Starts listening for the auto answer switch, which clears the answered chats when turned off.
+        let _ = ChitgramAnsweredChats.shared
         // Chitgram badges: lookups through Firestore, and this account's own badge.
         ChitgramBadgeService.start(context: context)
         // Chitgram Premium: the prices and this account's status, read again at every launch (Android: on resume).

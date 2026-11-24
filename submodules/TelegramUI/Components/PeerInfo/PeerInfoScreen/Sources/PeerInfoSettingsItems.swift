@@ -15,6 +15,7 @@ import PeerNameColorItem
 import NovagramLocalization
 import NovagramMessenger
 import ChitgramCore
+import ChitgramSettings
 import NovagramUpdateCheck
 import NovagramChannelStats
 import NovagramReviewPrompt
@@ -266,27 +267,36 @@ func settingsItems(data: PeerInfoScreenData?, context: AccountContext, presentat
         interaction.openSettings(.chatFolders)
     }))
     
-    // Novagram Settings Item — gold title + gold flame icon so the brand row stands out in Settings.
-    let novagramGold: UIColor = presentationData.theme.overallDarkAppearance ? UIColor(rgb: 0xFFCC33) : UIColor(rgb: 0xC8951A)
     let novagramLangCode = NovagramL10n.languageKey(for: presentationData.strings)
-    items[.novagramMessenger]!.append(PeerInfoScreenDisclosureItem(id: 0, text: NovagramSettingsSectionStrings.settingsRowTitle(langCode: novagramLangCode), titleColor: novagramGold, icon: novagramSettingsIcon(systemName: "flame.fill", color: .gold), longPressDuration: NovagramChannelStatsEntry.revealDuration, longPressAction: NovagramChannelStatsEntry.revealAction(context: context, authorize: NovagramAdsAdminGate.requestAccess), action: {
-        interaction.openSettings(.novagramMessenger)
-    }))
-    // Chitgram: Chitgram Premium right under Chitgram Settings (Android puts it first in its Chitgram section).
+    // Chitgram: the "Chitgram" section, its header and rows in Android's order (SettingsActivity: Premium, the two
+    // roulettes, Settings, App theme, App cache, Chat finder, About) with Android's two-colour icons. "Settings" opens
+    // the Chitgram settings screen; App theme and App cache are Telegram's own screens.
     ChitgramStrings.setLanguageCode(presentationData.strings.primaryComponent.languageCode)
-    items[.novagramMessenger]!.append(PeerInfoScreenDisclosureItem(id: 1, text: ChitgramStrings.get(427), icon: novagramSettingsIcon(systemName: "star.fill", color: .violet), action: {
-        interaction.openSettings(.chitgramPremium)
-    }))
-    // Chitgram: the roulettes, after Premium as on Android; "Coming soon" until they are built.
-    items[.novagramMessenger]!.append(PeerInfoScreenDisclosureItem(id: 3, text: ChitgramStrings.get(698), icon: novagramSettingsIcon(systemName: "waveform", color: .teal), action: {
-        interaction.openSettings(.chitgramVoiceRoulette)
-    }))
-    items[.novagramMessenger]!.append(PeerInfoScreenDisclosureItem(id: 4, text: ChitgramStrings.get(787), icon: novagramSettingsIcon(systemName: "video.fill", color: .pink), action: {
-        interaction.openSettings(.chitgramChatRoulette)
-    }))
-    items[.novagramMessenger]!.append(PeerInfoScreenDisclosureItem(id: 2, text: ChitgramStrings.get(355), icon: novagramSettingsIcon(systemName: "info.circle.fill", color: .teal), action: {
-        interaction.openSettings(.chitgramAbout)
-    }))
+    items[.novagramMessenger]!.append(PeerInfoScreenHeaderItem(id: "chitgram_header", text: chitgramSectionTitle))
+    for row in ChitgramSectionRow.allCases {
+        let section: PeerInfoSettingsSection
+        switch row {
+        case .premium:
+            section = .chitgramPremium
+        case .voiceRoulette:
+            section = .chitgramVoiceRoulette
+        case .chatRoulette:
+            section = .chitgramChatRoulette
+        case .settings:
+            section = .novagramMessenger
+        case .appTheme:
+            section = .appearance
+        case .appCache:
+            section = .chitgramAppCache
+        case .chatFinder:
+            section = .chitgramChatFinder
+        case .about:
+            section = .chitgramAbout
+        }
+        items[.novagramMessenger]!.append(PeerInfoScreenDisclosureItem(id: row.rawValue, text: row.title, icon: row.icon, action: {
+            interaction.openSettings(section)
+        }))
+    }
     // Chitgram: Novagram's bot catalogue (its own @novagram_* bots), Analytics, currency rates and ads panel rows are
     // removed; the last three ran on its closed SDKs and servers.
 

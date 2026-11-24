@@ -1097,7 +1097,7 @@ public struct NovagramL10n {
     }
 
     public var about_introHeader: String {
-        pick(en: "WHAT IS NOVAGRAM", uz: "NOVAGRAM NIMA", ru: "ЧТО ТАКОЕ NOVAGRAM", zh: "什么是 Chitgram")
+        pick(en: "WHAT IS CHITGRAM", uz: "CHITGRAM NIMA", ru: "ЧТО ТАКОЕ CHITGRAM", zh: "什么是 Chitgram")
     }
 
     public var about_introBody: String {

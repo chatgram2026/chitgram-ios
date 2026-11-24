@@ -19,6 +19,7 @@ import ContactListUI
 import NovagramMessenger
 import ChitgramSettings
 import ChitgramCore
+import StorageUsageScreen
 import WalletContext
 import UndoUI
 
@@ -79,6 +80,13 @@ extension PeerInfoScreenNode {
             push(chitgramPremiumController(context: self.context))
         case .chitgramAbout:
             push(chitgramAboutController(context: self.context))
+        case .chitgramAppCache:
+            let context = self.context
+            push(StorageUsageScreen(context: context, makeStorageUsageExceptionsScreen: { category in
+                return storageUsageExceptionsScreen(context: context, category: category)
+            }))
+        case .chitgramChatFinder:
+            push(chitgramChatFinderController(context: self.context))
         case .chitgramVoiceRoulette, .chitgramChatRoulette:
             self.controller?.present(UndoOverlayController(presentationData: self.presentationData, content: .info(title: nil, text: ChitgramStrings.get(447), timeout: nil, customUndoText: nil), action: { _ in return false }), in: .current)
         case .novagramBots:
