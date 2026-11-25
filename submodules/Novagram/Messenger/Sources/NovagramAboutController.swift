@@ -942,6 +942,7 @@ private enum NovagramAboutEntry: ItemListNodeEntry {
             // Icon + title, no chevron and no action — this is a description row.
             return ItemListDisclosureItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: feature.symbol, color: feature.color),
                 title: feature.title,
                 label: "",

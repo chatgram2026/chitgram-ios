@@ -29,6 +29,20 @@ private final class ChitgramTabBarArguments {
     }
 }
 
+/// The tab's own icon, as the tab bar shows it, on a Settings tile.
+private func chitgramTabIcon(_ tab: Int) -> UIImage? {
+    switch tab {
+    case ChitgramTabs.contacts:
+        return chitgramSettingsIcon(systemName: "person.crop.circle.fill", color: ChitgramIconColor.orange)
+    case ChitgramTabs.calls:
+        return chitgramSettingsIcon(systemName: "phone.fill", color: ChitgramIconColor.green)
+    case ChitgramTabs.settings:
+        return chitgramSettingsIcon(systemName: "gearshape.fill", color: ChitgramIconColor.gray)
+    default:
+        return chitgramSettingsIcon(systemName: "bubble.left.and.bubble.right.fill", color: ChitgramIconColor.blue)
+    }
+}
+
 private enum ChitgramTabBarEntry: ItemListNodeEntry {
     case tabsHeader(String)
     case tab(index: Int, tab: Int, title: String, visible: Bool, enabled: Bool)
@@ -106,11 +120,11 @@ private enum ChitgramTabBarEntry: ItemListNodeEntry {
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
         case let .tab(_, tab, title, visible, enabled):
             // Refusals (Chats, or fewer than two tabs) leave the switch where it was.
-            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, title: title, value: visible, enableInteractiveChanges: false, enabled: enabled, sectionId: self.section, style: .blocks, updated: { value in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramTabIcon(tab), title: title, value: visible, enableInteractiveChanges: false, enabled: enabled, sectionId: self.section, style: .blocks, updated: { value in
                 arguments.toggle(tab, value)
             })
         case let .order(title, value):
-            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: title, label: value, labelStyle: .multilineDetailText, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "arrow.up.arrow.down", color: ChitgramIconColor.violet), title: title, label: value, labelStyle: .multilineDetailText, sectionId: self.section, style: .blocks, action: {
                 arguments.reorder()
             })
         case let .extra(value, title, selected):

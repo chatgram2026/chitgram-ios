@@ -65,7 +65,7 @@ private enum NovagramTranslationEntry: ItemListNodeEntry {
             case let .language(_, theme, name, code, isSelected, isDownloaded):
                 let langCode = NovagramL10n.languageKey(for: presentationData.strings)
                 let label = isDownloaded ? (isSelected ? NovagramTranslateStrings.selectedLabel(langCode: langCode) : "✅") : NovagramTranslateStrings.downloadLabel(langCode: langCode)
-                return ItemListDisclosureItem(presentationData: presentationData, title: name, label: label, labelStyle: isSelected ? .badge(theme.list.itemAccentColor) : .detailText, sectionId: self.section, style: .blocks, action: {
+                return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: name, label: label, labelStyle: isSelected ? .badge(theme.list.itemAccentColor) : .detailText, sectionId: self.section, style: .blocks, action: {
                     if isDownloaded {
                         arguments.selectLanguage(code)
                     } else {

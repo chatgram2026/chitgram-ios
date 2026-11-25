@@ -139,6 +139,7 @@ private enum TextStyleEntry: ItemListNodeEntry {
                 : .text
             return ItemListDisclosureItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 title: name,
                 label: label,
                 labelStyle: labelStyle,

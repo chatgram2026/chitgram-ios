@@ -71,13 +71,13 @@ private enum ChitgramAutoAcceptEntry: ItemListNodeEntry {
         let arguments = arguments as! ChitgramAutoAcceptArguments
         switch self {
         case let .enabled(title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, title: title, text: text, value: value, maximumNumberOfLines: 2, sectionId: self.section, style: .blocks, updated: { value in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "person.crop.circle.badge.checkmark", color: ChitgramIconColor.green), title: title, text: text, value: value, maximumNumberOfLines: 2, sectionId: self.section, style: .blocks, updated: { value in
                 arguments.toggleEnabled(value)
             })
         case let .whereHeader(text), let .chatsHeader(text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
         case let .everywhere(title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, title: title, text: text, value: value, maximumNumberOfLines: 2, sectionId: self.section, style: .blocks, updated: { value in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "globe", color: ChitgramIconColor.blue), title: title, text: text, value: value, maximumNumberOfLines: 2, sectionId: self.section, style: .blocks, updated: { value in
                 arguments.toggleEverywhere(value)
             })
         case let .selectAll(text):

@@ -118,9 +118,9 @@ private enum NovagramCarPlayEntry: ItemListNodeEntry {
         case let .status(theme, title, status):
             let (label, labelStyle) = novagramCarPlayStatusLabel(status, theme: theme, strings: presentationData.strings)
             let iconColor: NovagramIconColor = status == .on ? .green : (status == .blocked ? .red : .gray)
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "car.fill", color: iconColor), title: title, label: label, labelStyle: labelStyle, sectionId: self.section, style: .blocks, disclosureStyle: .none, action: nil)
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "car.fill", color: iconColor), title: title, label: label, labelStyle: labelStyle, sectionId: self.section, style: .blocks, disclosureStyle: .none, action: nil)
         case let .action(_, title, status):
-            return ItemListActionItem(presentationData: presentationData, title: title, kind: .generic, alignment: .natural, sectionId: self.section, style: .blocks, action: {
+            return ItemListActionItem(presentationData: presentationData, systemStyle: .glass, title: title, kind: .generic, alignment: .natural, sectionId: self.section, style: .blocks, action: {
                 if status == .blocked {
                     arguments.openSettings()
                 } else {

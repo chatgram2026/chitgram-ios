@@ -92,8 +92,11 @@ same names. Texts come from the Android `org/fenixuz/utils/LanguageCode.kt` (`Ti
 - Novagram's modules live in `submodules/Novagram/<Feature>/`; every hook they have in a Telegram-owned file is
   indexed in `submodules/Novagram/HOOKS.md`. New Chitgram code goes into `submodules/Chitgram…` modules; Telegram files
   change only at small hook points marked `// Chitgram:`.
-- This PC is Windows: **no Swift compiler or Xcode here.** Every check is a Codemagic build. Read the neighbouring
-  code and the notes below before writing.
+- List rows look like Telegram's own settings screens: `systemStyle: .glass` on switch, disclosure, checkbox and
+  action rows, and feature rows carry an icon from `chitgramSettingsIcon(systemName:color:)` (ChitgramSettings: an
+  SF Symbol on Telegram's Settings tile; Novagram's `novagramSettingsIcon` draws through it). Value pickers get none.
+- This PC is Windows: **no Swift compiler or Xcode here.** Every check is a GitHub Actions build in
+  `chatgram2026/chitgram-ios` (or Codemagic). Read the neighbouring code and the notes below before writing.
 - Bash on this machine mangles backslashes in heredocs: write Python edit scripts with the Write tool instead.
 - Keep everything on D: (drive C is nearly full).
 

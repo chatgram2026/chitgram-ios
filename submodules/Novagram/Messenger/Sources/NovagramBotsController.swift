@@ -129,6 +129,7 @@ private enum NovagramBotsEntry: ItemListNodeEntry {
             // Pattern mirrors NovagramAccountsController.swift's live/suspended avatar rows.
             return ItemListDisclosureItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: peer == nil ? novagramBotIcon(systemName: bot.icon, hexColor: bot.color) : nil,
                 context: args.context,
                 iconPeer: peer,

@@ -687,28 +687,28 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .chitgramHeader(_, text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
         case let .chitgramAction(_, id, title, label):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: id == 251 ? "phone.fill" : "waveform", color: .violet), title: title, label: label, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: id == 251 ? "phone.fill" : "waveform", color: .violet), title: title, label: label, sectionId: self.section, style: .blocks, action: {
                 arguments.openChitgramAction(id)
             }, tag: self.novagramTag)
         case let .chitgramFooter(_, text):
             return ItemListTextItem(presentationData: presentationData, text: .plain(text), sectionId: self.section)
         case let .chitgramClearHistory(_, title, label):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "trash.fill", color: .gray), title: title, label: label, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "trash.fill", color: .gray), title: title, label: label, sectionId: self.section, style: .blocks, action: {
                 arguments.openClearSavedHistory()
             }, tag: self.novagramTag)
         // ─── ACCOUNTLAR ───
         case let .accountsHeader(text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
         case let .accountsManager(_, title):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "person.2.circle.fill", color: .blue), title: title, label: "", sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "person.2.circle.fill", color: .blue), title: title, label: "", sectionId: self.section, style: .blocks, action: {
                 arguments.openAccounts()
             }, tag: self.novagramTag)
         case let .aboutRow(_, title):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "info.circle.fill", color: .blue), title: title, label: "", sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "info.circle.fill", color: .blue), title: title, label: "", sectionId: self.section, style: .blocks, action: {
                 arguments.openAbout()
             }, tag: self.novagramTag)
         case let .novagramBots(_, title):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "bolt.circle.fill", color: .teal), title: title, label: "", sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "bolt.circle.fill", color: .teal), title: title, label: "", sectionId: self.section, style: .blocks, action: {
                 arguments.openNovagramBots()
             }, tag: self.novagramTag)
 
@@ -716,23 +716,23 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .interfaceHeader(text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
         case let .hideFolders(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "folder.badge.minus", color: .lightBlue), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "folder.badge.minus", color: .lightBlue), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateHideFolders(val)
             }, tag: self.novagramTag)
         case let .showStories(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "circle.dashed", color: .violet), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "circle.dashed", color: .violet), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateShowStories(val)
             }, tag: self.novagramTag)
         case let .showMutualContactSymbol(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "person.2.fill", color: .blue), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "person.2.fill", color: .blue), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateShowMutualContactSymbol(val)
             }, tag: self.novagramTag)
         case let .autoAcceptChats(_, title, label):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "person.crop.circle.badge.checkmark", color: .green), title: title, label: label, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "person.crop.circle.badge.checkmark", color: .green), title: title, label: label, sectionId: self.section, style: .blocks, action: {
                 arguments.openAutoAcceptChats()
             }, tag: self.novagramTag)
         case let .tabBarEditor(_, title):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "dock.rectangle", color: .blue), title: title, label: "", sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "dock.rectangle", color: .blue), title: title, label: "", sectionId: self.section, style: .blocks, action: {
                 arguments.openTabBarEditor()
             }, tag: self.novagramTag)
         case let .interfaceFooter(_, text):
@@ -743,56 +743,56 @@ private enum NovagramEntry: ItemListNodeEntry {
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
         case let .calls(_, title):
             // Hidden — Calls is navigation, not a setting. Kept for backward compat.
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "phone.fill", color: .green), title: title, label: "", sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "phone.fill", color: .green), title: title, label: "", sectionId: self.section, style: .blocks, action: {
                 arguments.openCalls()
             })
         case let .deletedMessages(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "trash.slash.fill", color: .red), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "trash.slash.fill", color: .red), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateShowDeletedMessages(val)
             }, tag: self.novagramTag)
         case let .showViewFirstMessage(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "arrow.up.to.line", color: .blue), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "arrow.up.to.line", color: .blue), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateShowViewFirstMessage(val)
             }, tag: self.novagramTag)
         case let .showGhostMode(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "eye.slash.fill", color: .gray), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "eye.slash.fill", color: .gray), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateShowGhostMode(val)
             }, tag: self.novagramTag)
         case let .longPressCameraSelection(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "camera.rotate.fill", color: .orange), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "camera.rotate.fill", color: .orange), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateLongPressCameraSelection(val)
             }, tag: self.novagramTag)
         case let .editedHistoryEnabled(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "clock.arrow.circlepath", color: .teal), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "clock.arrow.circlepath", color: .teal), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateEditedHistoryEnabled(val)
             }, tag: self.novagramTag)
         case let .roundVideoFromGallery(_, title, text, value, isNew):
             let langCode = NovagramL10n.languageKey(for: presentationData.strings)
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "video.circle.fill", color: .blue), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "video.circle.fill", color: .blue), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateRoundVideoFromGallery(val)
             }, tag: self.novagramTag)
         case let .forwardHideNames(_, title, text, value, isNew):
             let langCode = NovagramL10n.languageKey(for: presentationData.strings)
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "arrowshape.turn.up.right.circle.fill", color: .green), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "arrowshape.turn.up.right.circle.fill", color: .green), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateForwardHideNames(val)
             }, tag: self.novagramTag)
         case let .unlimitedPins(_, title, text, value, isNew):
             let langCode = NovagramL10n.languageKey(for: presentationData.strings)
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "pin.circle.fill", color: .orange), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "pin.circle.fill", color: .orange), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateUnlimitedPins(val)
             }, tag: self.novagramTag)
         case let .callDataSaving(_, title, text, value):
             let langCode = NovagramL10n.languageKey(for: presentationData.strings)
             let badge: AnyComponent<Empty>? = AnyComponent(NovagramNewBadgeComponent(langCode: langCode))
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "antenna.radiowaves.left.and.right", color: .green), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "antenna.radiowaves.left.and.right", color: .green), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateCallDataSaving(val)
             }, tag: self.novagramTag)
         case let .callRecording(_, title, label, isOn):
             // Green "On" badge like the CarPlay row, plain "Off" text.
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "record.circle", color: .red), title: title, label: label, labelStyle: isOn ? .badge(NovagramIconColor.green.uiColor) : .text, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "record.circle", color: .red), title: title, label: label, labelStyle: isOn ? .badge(NovagramIconColor.green.uiColor) : .text, sectionId: self.section, style: .blocks, action: {
                 arguments.openCallRecordingSettings()
             }, tag: self.novagramTag)
         case let .chatFooter(_, text):
@@ -802,27 +802,27 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .messagingHeader(text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
         case let .textStyle(_, title, label):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "textformat", color: .purple), title: title, label: label, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "textformat", color: .purple), title: title, label: label, sectionId: self.section, style: .blocks, action: {
                 arguments.openTextStyleSettings()
             }, tag: self.novagramTag)
         case let .autoText(theme, title, label):
             let l10n = NovagramL10n(presentationData.strings)
             let labelStyle: ItemListDisclosureLabelStyle = (label == l10n.settings_state_enabled) ? .badge(theme.list.itemAccentColor) : .text
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "text.append", color: .teal), title: title, label: label, labelStyle: labelStyle, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "text.append", color: .teal), title: title, label: label, labelStyle: labelStyle, sectionId: self.section, style: .blocks, action: {
                 arguments.openAutoTextSettings()
             }, tag: self.novagramTag)
         case let .autoTranslate(theme, title, label):
             let l10n = NovagramL10n(presentationData.strings)
             let labelStyle: ItemListDisclosureLabelStyle = (label == l10n.settings_state_enabled) ? .badge(theme.list.itemAccentColor) : .text
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "globe", color: .pink), title: title, label: label, labelStyle: labelStyle, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "globe", color: .pink), title: title, label: label, labelStyle: labelStyle, sectionId: self.section, style: .blocks, action: {
                 arguments.openAutoTranslateSettings()
             }, tag: self.novagramTag)
         case let .translateToggle(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "character.bubble.fill", color: .pink), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "character.bubble.fill", color: .pink), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateTranslateMessages(val)
             }, tag: self.novagramTag)
         case let .translateMessages(_, title):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "character.book.closed.fill", color: .lightBlue), title: title, label: "", sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "character.book.closed.fill", color: .lightBlue), title: title, label: "", sectionId: self.section, style: .blocks, action: {
                 arguments.openTranslationSettings()
             }, tag: self.novagramTag)
         case let .sendTranslateConfirm(_, title, text, value, isNew):
@@ -831,6 +831,7 @@ private enum NovagramEntry: ItemListNodeEntry {
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "questionmark.bubble.fill", color: .orange),
                 title: title,
                 text: text,
@@ -845,30 +846,30 @@ private enum NovagramEntry: ItemListNodeEntry {
             )
         case let .autoStickerEnabled(_, title, text, value):
             // Feature #30: Sticker auto-add — sends the last saved sticker after each text message
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "face.smiling.inverse", color: .orange), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "face.smiling.inverse", color: .orange), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateAutoStickerEnabled(val)
             }, tag: self.novagramTag)
         case let .heartEffectEnabled(_, title, text, value):
             // Feature #34: Heart effect — auto-attaches the ❤️ message effect to sent text messages
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "heart.fill", color: .red), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "heart.fill", color: .red), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateHeartEffectEnabled(val)
             }, tag: self.novagramTag)
         case let .autoAnswer(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "arrowshape.turn.up.left.fill", color: .green), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "arrowshape.turn.up.left.fill", color: .green), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 ChitgramPreferences.shared.set(val, for: .autoAnswerActive)
             }, tag: self.novagramTag)
         case let .autoAnswerText(_, title):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "text.bubble.fill", color: .green), title: title, label: "", sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "text.bubble.fill", color: .green), title: title, label: "", sectionId: self.section, style: .blocks, action: {
                 arguments.openAutoAnswerText()
             }, tag: self.novagramTag)
         case let .chitgramSwitch(_, _, key, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: chitgramSwitchSymbol(key), color: chitgramSwitchColor(key)), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: chitgramSwitchSymbol(key), color: chitgramSwitchColor(key)), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 if let preferenceKey = ChitgramPreferences.Key(rawValue: key) {
                     ChitgramPreferences.shared.set(val, for: preferenceKey)
                 }
             }, tag: self.novagramTag)
         case let .keywordWatch(_, title):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "bell.badge.fill", color: .orange), title: title, label: "", sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "bell.badge.fill", color: .orange), title: title, label: "", sectionId: self.section, style: .blocks, action: {
                 arguments.openKeywordWatch()
             }, tag: self.novagramTag)
         case let .messagingFooter(_, text):
@@ -878,11 +879,11 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .sttHeader(text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
         case let .sttEnabled(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "mic.fill", color: .red), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "mic.fill", color: .red), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateSttEnabled(val)
             }, tag: self.novagramTag)
         case let .sttLanguage(_, title, label):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "globe", color: .blue), title: title, label: label, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "globe", color: .blue), title: title, label: label, sectionId: self.section, style: .blocks, action: {
                 arguments.openSttLanguageSettings()
             }, tag: self.novagramTag)
         case let .voiceTranslate(_, title, text, value, isNew, enabled):
@@ -893,6 +894,7 @@ private enum NovagramEntry: ItemListNodeEntry {
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "character.bubble.fill", color: .teal),
                 title: title,
                 text: text,
@@ -926,7 +928,7 @@ private enum NovagramEntry: ItemListNodeEntry {
             )
         case let .carPlay(theme, title, status):
             let (label, labelStyle) = novagramCarPlayStatusLabel(status, theme: theme, strings: presentationData.strings)
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "car.fill", color: .green), title: title, label: label, labelStyle: labelStyle, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "car.fill", color: .green), title: title, label: label, labelStyle: labelStyle, sectionId: self.section, style: .blocks, action: {
                 arguments.openCarPlay()
             }, tag: self.novagramTag)
         case let .carPlayFooter(_, text):
@@ -936,24 +938,24 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .protectionHeader(text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
         case let .blockForeignUsers(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "person.crop.circle.badge.xmark", color: .orange), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "person.crop.circle.badge.xmark", color: .orange), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateBlockForeignUsers(val)
             }, tag: self.novagramTag)
         case let .enableNovagramProxy(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "lock.shield", color: .green), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "lock.shield", color: .green), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateEnableNovagramProxy(val)
             }, tag: self.novagramTag)
         case let .chatLockMasterEnabled(_, title, text, value, isNew):
             // Feature #46: Chat Lock master toggle — on turns the feature on and sets the master pincode
             let langCode = NovagramL10n.languageKey(for: presentationData.strings)
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "lock.shield.fill", color: .blue), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "lock.shield.fill", color: .blue), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateChatLockMaster(val)
             }, tag: self.novagramTag)
         case let .autoDownloadDisabled(_, title, text, value, isNew):
             let langCode = NovagramL10n.languageKey(for: presentationData.strings)
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "arrow.down.circle.fill", color: .orange), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "arrow.down.circle.fill", color: .orange), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateAutoDownloadDisabled(val)
             }, tag: self.novagramTag)
         case let .sendConfirmEnabled(_, title, text, value, isNew):
@@ -962,6 +964,7 @@ private enum NovagramEntry: ItemListNodeEntry {
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "hand.raised.fill", color: .purple),
                 title: title,
                 text: text,
@@ -986,6 +989,7 @@ private enum NovagramEntry: ItemListNodeEntry {
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "paintpalette.fill", color: .green),
                 title: title,
                 text: text,
@@ -1027,11 +1031,11 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .secretVaultEnabled(_, title, text, value, isNew):
             let langCode = NovagramL10n.languageKey(for: presentationData.strings)
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "eye.slash.fill", color: .purple), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "eye.slash.fill", color: .purple), title: title, text: text, titleBadgeComponent: badge, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateSecretVault(val)
             }, tag: self.novagramTag)
         case let .secretVaultBiometric(_, title, iconName, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: iconName, color: .purple), title: title, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: iconName, color: .purple), title: title, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateSecretVaultBiometric(val)
             }, tag: self.novagramTag)
         case let .secretVaultFooter(_, text):
@@ -1055,15 +1059,15 @@ private enum NovagramEntry: ItemListNodeEntry {
                 sectionId: self.section
             )
         case let .reminderEnabled(_, title, text, value):
-            return ItemListSwitchItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "bell.badge.fill", color: .orange), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "bell.badge.fill", color: .orange), title: title, text: text, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 arguments.updateReminderEnabled(val)
             }, tag: self.novagramTag)
         case let .reminderTime(_, title, label):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "clock.fill", color: .blue), title: title, label: label, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "clock.fill", color: .blue), title: title, label: label, sectionId: self.section, style: .blocks, action: {
                 arguments.openReminderTimeSettings()
             }, tag: self.novagramTag)
         case let .reminderSound(_, title, label):
-            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "speaker.wave.2.fill", color: .pink), title: title, label: label, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "speaker.wave.2.fill", color: .pink), title: title, label: label, sectionId: self.section, style: .blocks, action: {
                 arguments.openReminderSoundSettings()
             }, tag: self.novagramTag)
         case let .reminderFooter(_, text):
@@ -1089,6 +1093,7 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .addRecommendedFolders(_, title, _, _):
             return ItemListDisclosureItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "folder.badge.plus", color: .blue),
                 title: title,
                 label: "",
@@ -1102,6 +1107,7 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .foldersPrompt(_, title, text, value):
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "folder.badge.questionmark", color: .blue),
                 title: title,
                 text: text,
@@ -1118,6 +1124,7 @@ private enum NovagramEntry: ItemListNodeEntry {
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "crown.fill", color: .gold),
                 title: title,
                 text: text,
@@ -1133,6 +1140,7 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .folderStyle(_, title, label, _):
             return ItemListDisclosureItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "square.grid.2x2.fill", color: .purple),
                 title: title,
                 label: label,
@@ -1148,6 +1156,7 @@ private enum NovagramEntry: ItemListNodeEntry {
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "clock.arrow.circlepath", color: .orange),
                 title: title,
                 text: text,
@@ -1165,6 +1174,7 @@ private enum NovagramEntry: ItemListNodeEntry {
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "link.circle.fill", color: .teal),
                 title: title,
                 text: text,
@@ -1182,6 +1192,7 @@ private enum NovagramEntry: ItemListNodeEntry {
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "checkmark.circle.fill", color: .green),
                 title: title,
                 text: text,
@@ -1198,6 +1209,7 @@ private enum NovagramEntry: ItemListNodeEntry {
             // Feature #40 (part b): action row — tapping copies + shares tg://settings/novagrampro
             return ItemListDisclosureItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "square.and.arrow.up.fill", color: .teal),
                 title: title,
                 label: "",
@@ -1217,6 +1229,7 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .showAds(_, title, text, value):
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "megaphone.fill", color: .orange),
                 title: title,
                 text: text,
@@ -1231,6 +1244,7 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .adEventsOff(_, title, text, value):
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "antenna.radiowaves.left.and.right.slash", color: .red),
                 title: title,
                 text: text,
@@ -1245,6 +1259,7 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .currencyRatesView(_, title, text, value):
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "dollarsign.circle.fill", color: .green),
                 title: title,
                 text: text,
@@ -1259,6 +1274,7 @@ private enum NovagramEntry: ItemListNodeEntry {
         case let .adsPanel(_, title, text, value):
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "rectangle.stack.badge.person.crop.fill", color: .purple),
                 title: title,
                 text: text,
@@ -1275,6 +1291,7 @@ private enum NovagramEntry: ItemListNodeEntry {
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "arrow.down.circle.fill", color: .lightBlue),
                 title: title,
                 text: text,
@@ -1292,6 +1309,7 @@ private enum NovagramEntry: ItemListNodeEntry {
             let badge: AnyComponent<Empty>? = isNew ? AnyComponent(NovagramNewBadgeComponent(langCode: langCode)) : nil
             return ItemListSwitchItem(
                 presentationData: presentationData,
+                systemStyle: .glass,
                 icon: novagramSettingsIcon(systemName: "character.bubble.fill", color: .lightBlue),
                 title: title,
                 text: text,

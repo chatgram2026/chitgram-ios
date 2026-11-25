@@ -73,13 +73,13 @@ private enum ChitgramKeywordEntry: ItemListNodeEntry {
         let arguments = arguments as! ChitgramKeywordArguments
         switch self {
         case let .enabled(value):
-            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, title: ChitgramStrings.get(568), text: ChitgramStrings.get(569), value: value, maximumNumberOfLines: 2, sectionId: self.section, style: .blocks, updated: { value in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "bell.badge.fill", color: ChitgramIconColor.orange), title: ChitgramStrings.get(568), text: ChitgramStrings.get(569), value: value, maximumNumberOfLines: 2, sectionId: self.section, style: .blocks, updated: { value in
                 arguments.toggle(value)
             })
         case let .wordsHeader(text), let .hitsHeader(text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
         case let .word(index, word):
-            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: word, label: "", sectionId: self.section, style: .blocks, disclosureStyle: .none, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "tag.fill", color: ChitgramIconColor.teal), title: word, label: "", sectionId: self.section, style: .blocks, disclosureStyle: .none, action: {
                 arguments.removeWord(index, word)
             })
         case let .add(draft):
@@ -91,7 +91,7 @@ private enum ChitgramKeywordEntry: ItemListNodeEntry {
         case let .wordsFooter(text), let .noHits(text):
             return ItemListTextItem(presentationData: presentationData, text: .plain(text), sectionId: self.section)
         case let .hit(_, title, detail):
-            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: title, label: detail, labelStyle: .multilineDetailText, sectionId: self.section, style: .blocks, disclosureStyle: .none, action: nil)
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "text.bubble.fill", color: ChitgramIconColor.blue), title: title, label: detail, labelStyle: .multilineDetailText, sectionId: self.section, style: .blocks, disclosureStyle: .none, action: nil)
         }
     }
 }

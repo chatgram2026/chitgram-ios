@@ -154,7 +154,7 @@ private enum AutoTranslateEntry: ItemListNodeEntry {
             return ItemListTextItem(presentationData: presentationData, text: .plain(text), sectionId: self.section, style: .blocks)
 
         case let .enableToggle(_, title, desc, value):
-            return ItemListSwitchItem(presentationData: presentationData, title: title, text: desc, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "globe", color: .pink), title: title, text: desc, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 args.updateEnabled(val)
             })
 
@@ -164,7 +164,7 @@ private enum AutoTranslateEntry: ItemListNodeEntry {
         case let .language(_, theme, name, code, isSelected, isDownloaded):
             let langCode = NovagramL10n.languageKey(for: presentationData.strings)
             let label = isDownloaded ? (isSelected ? NovagramTranslateStrings.selectedLabel(langCode: langCode) : "✅") : NovagramTranslateStrings.downloadLabel(langCode: langCode)
-            return ItemListDisclosureItem(presentationData: presentationData, title: name, label: label, labelStyle: isSelected ? .badge(theme.list.itemAccentColor) : .detailText, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: name, label: label, labelStyle: isSelected ? .badge(theme.list.itemAccentColor) : .detailText, sectionId: self.section, style: .blocks, action: {
                 if isDownloaded {
                     args.updateLang(code)
                 } else {

@@ -201,7 +201,7 @@ private enum ChitgramAutoPostListEntry: ItemListNodeEntry {
         case let .header(text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
         case let .task(_, id, title, summary):
-            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: title, label: summary, labelStyle: .multilineDetailText, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "paperplane.fill", color: ChitgramIconColor.blue), title: title, label: summary, labelStyle: .multilineDetailText, sectionId: self.section, style: .blocks, action: {
                 arguments.openTask(id)
             })
         case let .newTask(text):
@@ -362,10 +362,32 @@ private final class ChitgramAutoPostEditArguments {
     }
 }
 
+/// A statistics row's icon, by its SF Symbol.
+private func chitgramAutoPostStatIcon(_ symbol: String) -> UIImage? {
+    let color: UIColor
+    switch symbol {
+    case "paperplane.fill":
+        color = ChitgramIconColor.green
+    case "tray.full.fill":
+        color = ChitgramIconColor.orange
+    case "checkmark.circle.fill":
+        color = ChitgramIconColor.teal
+    case "clock.fill":
+        color = ChitgramIconColor.blue
+    case "hourglass":
+        color = ChitgramIconColor.purple
+    case "calendar":
+        color = ChitgramIconColor.red
+    default:
+        color = ChitgramIconColor.gray
+    }
+    return chitgramSettingsIcon(systemName: symbol, color: color)
+}
+
 private enum ChitgramAutoPostEditEntry: ItemListNodeEntry {
     case error(String)
     case statsHeader(String)
-    case stat(index: Int, title: String, value: String)
+    case stat(index: Int, icon: String, title: String, value: String)
     case messageHeader(String)
     case source(title: String, label: String)
     case mode(index: Int, title: String, selected: Bool)
@@ -410,7 +432,7 @@ private enum ChitgramAutoPostEditEntry: ItemListNodeEntry {
             return 0
         case .statsHeader:
             return 10
-        case let .stat(index, _, _):
+        case let .stat(index, _, _, _):
             return 11 + Int32(index)
         case .messageHeader:
             return 100
@@ -466,10 +488,10 @@ private enum ChitgramAutoPostEditEntry: ItemListNodeEntry {
             return ItemListTextItem(presentationData: presentationData, text: .plain(text), sectionId: self.section)
         case let .statsHeader(text), let .messageHeader(text), let .targetsHeader(text), let .scheduleHeader(text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
-        case let .stat(_, title, value):
-            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: title, label: value, sectionId: self.section, style: .blocks, disclosureStyle: .none, action: nil)
+        case let .stat(_, icon, title, value):
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramAutoPostStatIcon(icon), title: title, label: value, sectionId: self.section, style: .blocks, disclosureStyle: .none, action: nil)
         case let .source(title, label):
-            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: title, label: label, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "bookmark.fill", color: ChitgramIconColor.blue), title: title, label: label, sectionId: self.section, style: .blocks, action: {
                 arguments.chooseSaved()
             })
         case let .mode(index, title, selected):
@@ -481,7 +503,7 @@ private enum ChitgramAutoPostEditEntry: ItemListNodeEntry {
                 arguments.chooseSaved()
             })
         case let .text(index, text):
-            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: text, label: "", sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "text.bubble.fill", color: ChitgramIconColor.green), title: text, label: "", sectionId: self.section, style: .blocks, action: {
                 arguments.editText(index)
             })
         case let .addText(text):
@@ -489,7 +511,7 @@ private enum ChitgramAutoPostEditEntry: ItemListNodeEntry {
                 arguments.editText(-1)
             })
         case let .target(_, title):
-            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: title, label: "", sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "bubble.left.and.bubble.right.fill", color: ChitgramIconColor.lightBlue), title: title, label: "", sectionId: self.section, style: .blocks, action: {
                 arguments.addTargets()
             })
         case let .addTargets(text):
@@ -501,7 +523,7 @@ private enum ChitgramAutoPostEditEntry: ItemListNodeEntry {
                 arguments.selectScheduleMode(index)
             })
         case let .time(index, title):
-            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: title, label: "", sectionId: self.section, style: .blocks, disclosureStyle: .none, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "clock.fill", color: ChitgramIconColor.orange), title: title, label: "", sectionId: self.section, style: .blocks, disclosureStyle: .none, action: {
                 arguments.removeTime(index)
             })
         case let .addTime(text):
@@ -509,16 +531,16 @@ private enum ChitgramAutoPostEditEntry: ItemListNodeEntry {
                 arguments.addTime()
             })
         case let .interval(title, value):
-            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: title, label: value, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "timer", color: ChitgramIconColor.orange), title: title, label: value, sectionId: self.section, style: .blocks, action: {
                 arguments.chooseInterval()
             })
         case let .hours(title, value):
-            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: title, label: value, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "sun.max.fill", color: ChitgramIconColor.purple), title: title, label: value, sectionId: self.section, style: .blocks, action: {
                 arguments.chooseHours()
             })
         case let .enabled(title, value):
             // The switch can be refused (no message or chat yet), so it follows the stored state, not the tap.
-            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, title: title, value: value, enableInteractiveChanges: false, sectionId: self.section, style: .blocks, updated: { _ in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: chitgramSettingsIcon(systemName: "power", color: ChitgramIconColor.green), title: title, value: value, enableInteractiveChanges: false, sectionId: self.section, style: .blocks, updated: { _ in
                 arguments.toggleEnabled()
             })
         case let .delete(text):
@@ -790,22 +812,22 @@ public func chitgramAutoPostEditController(context: AccountContext, taskId: Int6
             let queued = ChitgramAutoPost.queued(task)
             if task.sentCount > 0 || queued > 0 {
                 entries.append(.statsHeader(ChitgramStrings.get(461)))
-                var stats: [(String, String)] = []
-                stats.append((ChitgramStrings.get(462), "\(task.sentCount)"))
-                stats.append((ChitgramStrings.get(508), "\(queued)"))
-                stats.append((ChitgramStrings.get(509), task.lastSentAt > 0 ? chitgramAutoPostTime(task.lastSentAt) : ChitgramStrings.get(512)))
+                var stats: [(String, String, String)] = []
+                stats.append((ChitgramStrings.get(462), "paperplane.fill", "\(task.sentCount)"))
+                stats.append((ChitgramStrings.get(508), "tray.full.fill", "\(queued)"))
+                stats.append((ChitgramStrings.get(509), "checkmark.circle.fill", task.lastSentAt > 0 ? chitgramAutoPostTime(task.lastSentAt) : ChitgramStrings.get(512)))
                 let next = ChitgramAutoPost.nextSend(context: context, task: task)
-                stats.append((ChitgramStrings.get(510), next > 0 ? chitgramAutoPostTime(next) : ChitgramStrings.get(task.enabled ? 512 : 480)))
+                stats.append((ChitgramStrings.get(510), "clock.fill", next > 0 ? chitgramAutoPostTime(next) : ChitgramStrings.get(task.enabled ? 512 : 480)))
                 let ends = ChitgramAutoPost.queueEnds(context: context, task: task)
                 if ends > 0 {
-                    stats.append((ChitgramStrings.get(536), chitgramAutoPostTime(ends)))
+                    stats.append((ChitgramStrings.get(536), "hourglass", chitgramAutoPostTime(ends)))
                 }
                 if task.createdAt > 0 {
-                    stats.append((ChitgramStrings.get(511), chitgramAutoPostTime(task.createdAt)))
+                    stats.append((ChitgramStrings.get(511), "calendar", chitgramAutoPostTime(task.createdAt)))
                 }
-                stats.append((ChitgramStrings.get(529), ChitgramStrings.get(528)))
+                stats.append((ChitgramStrings.get(529), "iphone", ChitgramStrings.get(528)))
                 for (index, stat) in stats.enumerated() {
-                    entries.append(.stat(index: index, title: stat.0, value: stat.1))
+                    entries.append(.stat(index: index, icon: stat.1, title: stat.0, value: stat.2))
                 }
             }
 

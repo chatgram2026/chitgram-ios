@@ -136,7 +136,7 @@ private enum AutoTextEntry: ItemListNodeEntry {
             return ItemListTextItem(presentationData: presentationData, text: .plain(text), sectionId: self.section, style: .blocks)
 
         case let .enableToggle(_, title, desc, value):
-            return ItemListSwitchItem(presentationData: presentationData, title: title, text: desc, value: value, sectionId: self.section, style: .blocks, updated: { val in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "text.append", color: .teal), title: title, text: desc, value: value, sectionId: self.section, style: .blocks, updated: { val in
                 args.updateEnabled(val)
             })
 

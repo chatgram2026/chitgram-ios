@@ -18,10 +18,12 @@ private enum ChitgramChatFinderState: Equatable {
 }
 
 private final class ChitgramChatFinderArguments {
+    let context: AccountContext
     let updateQuery: (String) -> Void
     let open: (EnginePeer) -> Void
 
-    init(updateQuery: @escaping (String) -> Void, open: @escaping (EnginePeer) -> Void) {
+    init(context: AccountContext, updateQuery: @escaping (String) -> Void, open: @escaping (EnginePeer) -> Void) {
+        self.context = context
         self.updateQuery = updateQuery
         self.open = open
     }
@@ -69,7 +71,7 @@ private enum ChitgramChatFinderEntry: ItemListNodeEntry {
         case let .hint(text), let .status(text):
             return ItemListTextItem(presentationData: presentationData, text: .plain(text), sectionId: self.section)
         case let .found(peer, title, label):
-            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: title, label: label, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, context: arguments.context, iconPeer: peer, title: title, label: label, sectionId: self.section, style: .blocks, action: {
                 arguments.open(peer)
             })
         }
@@ -95,7 +97,7 @@ public func chitgramChatFinderController(context: AccountContext) -> ViewControl
     let query = ValuePromise<String>("", ignoreRepeated: true)
     var navigateImpl: ((EnginePeer) -> Void)?
 
-    let arguments = ChitgramChatFinderArguments(updateQuery: { value in
+    let arguments = ChitgramChatFinderArguments(context: context, updateQuery: { value in
         query.set(value)
     }, open: { peer in
         navigateImpl?(peer)

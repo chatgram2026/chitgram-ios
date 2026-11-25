@@ -65,7 +65,7 @@ private let chitgramSectionIcons: [UIImage?] = ChitgramSectionRow.allCases.map {
     case .chatRoulette:
         return chitgramIcon("Video", top: 0xFF5A7A, bottom: 0xE0484D)
     case .settings:
-        return chitgramIcon("Folder", top: 0x7E57C2, bottom: 0x5E35B1)
+        return chitgramIcon("Settings", top: 0x7E57C2, bottom: 0x5E35B1)
     case .appTheme:
         return chitgramIcon("Appearance", top: 0x1BA4ED, bottom: 0x1488E1)
     case .appCache:

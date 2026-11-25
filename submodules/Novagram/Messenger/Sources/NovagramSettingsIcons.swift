@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import ChitgramSettings
 
 /// Telegram Settings ekranidagi rangli kvadrat ikon ko'rinishida SF Symbol asosida ikon yaratadi.
 /// Apple's iOS Settings va Telegram'ning standart row-icon dizaynini takrorlaydi:
@@ -26,28 +27,7 @@ public enum NovagramIconColor {
 }
 
 public func novagramSettingsIcon(systemName: String, color: NovagramIconColor) -> UIImage? {
-    let size = CGSize(width: 30, height: 30)
-    let renderer = UIGraphicsImageRenderer(size: size)
-    return renderer.image { ctx in
-        let bgRect = CGRect(origin: .zero, size: size)
-        let bgPath = UIBezierPath(roundedRect: bgRect, cornerRadius: 7)
-        color.uiColor.setFill()
-        bgPath.fill()
-
-        if #available(iOS 13.0, *) {
-            let cfg = UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
-            if let symbol = UIImage(systemName: systemName, withConfiguration: cfg) {
-                let symbolSize = symbol.size
-                let drawSize = CGSize(width: min(symbolSize.width, 20), height: min(symbolSize.height, 20))
-                let drawRect = CGRect(
-                    x: (size.width - drawSize.width) / 2,
-                    y: (size.height - drawSize.height) / 2,
-                    width: drawSize.width,
-                    height: drawSize.height
-                )
-                let tinted = symbol.withTintColor(.white, renderingMode: .alwaysOriginal)
-                tinted.draw(in: drawRect)
-            }
-        }
-    }
+    // Chitgram: drawn as Telegram draws the Settings tab's icons (its gloss, 8 pt corners), so that these rows look
+    // like the Settings tab's.
+    return chitgramSettingsIcon(systemName: systemName, color: color.uiColor)
 }

@@ -138,19 +138,19 @@ private enum NovagramCallRecordingSettingsEntry: ItemListNodeEntry {
         case let .recordHeader(text), let .qualityHeader(text), let .recordingsHeader(text), let .privacyHeader(text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
         case let .record(_, title, value):
-            return ItemListSwitchItem(presentationData: presentationData, title: title, value: value, sectionId: self.section, style: .blocks, updated: { value in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "record.circle", color: .red), title: title, value: value, sectionId: self.section, style: .blocks, updated: { value in
                 arguments.updateEnabled(value)
             })
         case let .auto(_, title, value):
-            return ItemListSwitchItem(presentationData: presentationData, title: title, value: value, sectionId: self.section, style: .blocks, updated: { value in
+            return ItemListSwitchItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "wand.and.stars", color: .orange), title: title, value: value, sectionId: self.section, style: .blocks, updated: { value in
                 arguments.updateAuto(value)
             }, tag: NovagramSettingsItemTag(feature: .callRecordingAuto))
         case let .quality(_, quality, title, checked):
-            return ItemListCheckboxItem(presentationData: presentationData, title: title, style: .left, checked: checked, zeroSeparatorInsets: false, sectionId: self.section, action: {
+            return ItemListCheckboxItem(presentationData: presentationData, systemStyle: .glass, title: title, style: .left, checked: checked, zeroSeparatorInsets: false, sectionId: self.section, action: {
                 arguments.updateQuality(quality)
             })
         case let .recordings(_, title, label):
-            return ItemListDisclosureItem(presentationData: presentationData, title: title, label: label, sectionId: self.section, style: .blocks, action: {
+            return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, icon: novagramSettingsIcon(systemName: "waveform", color: .blue), title: title, label: label, sectionId: self.section, style: .blocks, action: {
                 arguments.openRecordings()
             }, tag: NovagramSettingsItemTag(feature: .callRecordings))
         case let .recordFooter(_, text), let .autoFooter(_, text), let .qualityFooter(_, text), let .recordingsFooter(_, text), let .privacyText(_, text):
