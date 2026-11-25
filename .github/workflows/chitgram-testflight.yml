@@ -2,6 +2,9 @@
 # codemagic.yaml's "Chitgram TestFlight" (config, signing and toolchain are copied from it unchanged), for when
 # Codemagic's free minutes are used up. Started by hand: Actions ▸ "Chitgram TestFlight" ▸ Run workflow.
 #
+# It runs in chatgram2026/chitgram-ios, a public repository that is not a fork (GitHub paused Actions on the fork
+# chatgram2026/ios), with chitgram-nova as its default branch so that this hand-started workflow is offered.
+#
 # Repository secrets it needs (Settings ▸ Secrets and variables ▸ Actions):
 #   APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY: an App Store Connect
 #     API key of the Apple team (App Store Connect ▸ Users and Access ▸ Integrations; the .p8 file's whole text);
