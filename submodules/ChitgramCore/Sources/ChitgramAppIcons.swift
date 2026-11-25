@@ -45,26 +45,12 @@ public func chitgramAppIconTitle(_ name: String) -> String? {
         "ChitgramPremiumIcon": 694,
         "ChitgramFireIcon": 695,
         "ChitgramOceanIcon": 696,
-        "ChitgramSunsetIcon": 697
+        "ChitgramSunsetIcon": 697,
+        "ChitgramBlackIcon": 862,
+        "ChitgramCoffeeIcon": 863
     ]
-    if let id = ids[name] {
-        return ChitgramStrings.get(id)
-    }
-    // Android's ids 862 and 863 are newer than this app's copy of the table.
-    switch (name, ChitgramStrings.language) {
-    case ("ChitgramBlackIcon", .uz):
-        return "Qora"
-    case ("ChitgramBlackIcon", .ru):
-        return "Чёрный"
-    case ("ChitgramBlackIcon", .en):
-        return "Black"
-    case ("ChitgramCoffeeIcon", .uz):
-        return "Qahva"
-    case ("ChitgramCoffeeIcon", .ru):
-        return "Кофе"
-    case ("ChitgramCoffeeIcon", .en):
-        return "Coffee"
-    default:
+    guard let id = ids[name] else {
         return nil
     }
+    return ChitgramStrings.get(id)
 }

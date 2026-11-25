@@ -2,6 +2,7 @@ import Foundation
 import TelegramCore
 import TelegramPresentationData
 import TextFormat
+import ChitgramCore
 
 public func stringForTimestamp(day: Int32, month: Int32, year: Int32, dateTimeFormat: PresentationDateTimeFormat) -> String {
     let separator = dateTimeFormat.dateSeparator
@@ -383,7 +384,8 @@ public func stringForRelativeTimestamp(strings: PresentationStrings, relativeTim
     let dayDifference = timeinfo.tm_yday - timeinfoNow.tm_yday
     if dayDifference > -7 {
         if dayDifference == 0 {
-            return stringForShortTimestamp(hours: timeinfo.tm_hour, minutes: timeinfo.tm_min, dateTimeFormat: dateTimeFormat)
+            // Chitgram: "Show seconds" (Android TimeWithSeconds); only today's chats show a clock.
+            return stringForShortTimestamp(hours: timeinfo.tm_hour, minutes: timeinfo.tm_min, seconds: ChitgramClock.showsSeconds ? timeinfo.tm_sec : nil, dateTimeFormat: dateTimeFormat)
         } else {
             return shortStringForDayOfWeek(strings: strings, day: timeinfo.tm_wday)
         }
@@ -402,10 +404,12 @@ public func stringForPreciseRelativeTimestamp(strings: PresentationStrings, rela
     localtime_r(&now, &timeinfoNow)
     
     let dayDifference = timeinfo.tm_yday - timeinfoNow.tm_yday
+    // Chitgram: "Show seconds" (Android TimeWithSeconds).
+    let seconds: Int32? = ChitgramClock.showsSeconds ? timeinfo.tm_sec : nil
     if dayDifference == 0 {
-        return stringForShortTimestamp(hours: timeinfo.tm_hour, minutes: timeinfo.tm_min, dateTimeFormat: dateTimeFormat)
+        return stringForShortTimestamp(hours: timeinfo.tm_hour, minutes: timeinfo.tm_min, seconds: seconds, dateTimeFormat: dateTimeFormat)
     } else {
-        return "\(stringForTimestamp(day: timeinfo.tm_mday, month: timeinfo.tm_mon + 1, year: timeinfo.tm_year, dateTimeFormat: dateTimeFormat)), \(stringForShortTimestamp(hours: timeinfo.tm_hour, minutes: timeinfo.tm_min, dateTimeFormat: dateTimeFormat))"
+        return "\(stringForTimestamp(day: timeinfo.tm_mday, month: timeinfo.tm_mon + 1, year: timeinfo.tm_year, dateTimeFormat: dateTimeFormat)), \(stringForShortTimestamp(hours: timeinfo.tm_hour, minutes: timeinfo.tm_min, seconds: seconds, dateTimeFormat: dateTimeFormat))"
     }
 }
 

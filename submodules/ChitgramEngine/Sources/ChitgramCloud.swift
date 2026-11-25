@@ -37,8 +37,9 @@ public enum ChitgramCloud {
         "reminder_enabled": "b", "reminder_delay_min": "i", "reminder_sound": "i",
         "hide_tabs": "b", "folder_icon_mode": "b",
         // The bottom tab bar (Android ChatgramTabs; the same tab ids, Android's Profile tab stands for Settings here).
-        // Its extra button and style are Android's only.
-        "tabs_order": "s", "tabs_hidden": "s", "tabs_customized": "b", "tabs_start": "i", "tabs_labels": "i"
+        // Its extra button is Android's only.
+        "tabs_order": "s", "tabs_hidden": "s", "tabs_customized": "b", "tabs_start": "i", "tabs_labels": "i",
+        "tabs_style": "i"
     ]
 
     private struct Item {

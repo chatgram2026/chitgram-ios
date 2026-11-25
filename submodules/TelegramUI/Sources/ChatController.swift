@@ -8012,6 +8012,8 @@ public final class ChatControllerImpl: TelegramBaseController, ChatController, G
         super.viewDidAppear(animated)
         
         self.didAppear = true
+        // Chitgram: the composer mic and the profile menu's "Voice to text" write into this chat's input box.
+        self.chitgramRegisterInputBridge()
         
         self.chatDisplayNode.historyNode.experimentalSnapScrollToItem = false
         self.chatDisplayNode.historyNode.canReadHistory.set(self.computedCanReadHistoryPromise.get())

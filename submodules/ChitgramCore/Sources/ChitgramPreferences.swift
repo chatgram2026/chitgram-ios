@@ -43,6 +43,8 @@ public final class ChitgramPreferences {
         case folderIconMode = "folder_icon_mode"
         case folderIcons = "folder_icons"
         case hideTabs = "hide_tabs"
+        case avatarOpensProfile = "avatar_opens_profile"
+        case timeWithSeconds = "time_with_seconds"
         // Channels
         case autoAcceptJoin = "auto_accept_join"
         // Reminder

@@ -325,7 +325,8 @@ final class TabBarControllerNode: ASDisplayNode {
                 outerInsets: UIEdgeInsets(top: 0.0, left: sideInset, bottom: tabBarBottomInset, right: sideInset),
                 axis: sidePlacement == nil ? .horizontal : .vertical,
                 isCompact: tabBarIsCompact(layout: params.layout, sidePlacement: sidePlacement),
-                chitgramLabelsMode: ChitgramTabs.labelsMode()
+                chitgramLabelsMode: ChitgramTabs.labelsMode(),
+                chitgramSelectedStyle: ChitgramTabs.selectedStyle()
             )),
             environment: {},
             containerSize: sidePlacement?.frame.size ?? CGSize(width: params.layout.size.width - sideInset * 2.0, height: 100.0)

@@ -1,4 +1,5 @@
 import Foundation
+import ChitgramSettings
 import UIKit
 import TelegramCore
 import Display
@@ -258,6 +259,10 @@ func inputTextPanelStateForChatPresentationInterfaceState(_ chatPresentationInte
                         accessoryItems.append(.input(isEnabled: true, inputMode: .stickers))
                     }
                 } else {
+                    // Chitgram: the dictation mic (Android shows it beside the field while it is switched on).
+                    if chitgramVoiceInputIsAvailable() {
+                        accessoryItems.append(.chitgramDictation)
+                    }
                     stickersAreEmoji = stickersAreEmoji || hasForward
                     if stickersEnabled {
                         accessoryItems.append(.input(isEnabled: true, inputMode: stickersAreEmoji ? .emoji : .stickers))

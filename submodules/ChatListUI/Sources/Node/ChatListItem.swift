@@ -5875,6 +5875,10 @@ public class ChatListItemNode: ItemListRevealOptionsItemNode {
             if case let .peer(peerData) = item.content, let peer = peerData.peer.peer, peer.containerPeerId != nil {
                 shouldHitTestAvatar = true
             }
+            // Chitgram: the avatar opens the profile (Android AvatarOpensProfile).
+            if chitgramAvatarOpensProfile(item: item) {
+                shouldHitTestAvatar = true
+            }
             if shouldHitTestAvatar {
                 if let result = self.avatarNode.view.hitTest(self.view.convert(point, to: self.avatarNode.view), with: event) {
                     return result
@@ -5896,6 +5900,9 @@ public class ChatListItemNode: ItemListRevealOptionsItemNode {
             case let .peer(peerData):
                 if let peer = peerData.peer.peer, let linkedCommunityId = peer.containerPeerId {
                     item.interaction.openCommunity(linkedCommunityId)
+                } else if self.avatarNode.storyStats == nil, chitgramAvatarOpensProfile(item: item), let peer = peerData.peer.peer {
+                    // Chitgram: no story ring, so the avatar opens the profile (Android AvatarOpensProfile).
+                    chitgramOpenProfile(context: item.context, peer: peer)
                 } else {
                     item.interaction.openStories(.peer(peerData.peer.peerId), self)
                 }

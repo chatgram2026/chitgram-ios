@@ -13,6 +13,8 @@ swift_library(
     ],
     deps = [
         "//submodules/TelegramCore:TelegramCore",
+        # Chitgram: the "Show seconds" switch.
+        "//submodules/ChitgramCore",
         "//submodules/Display:Display",
         "//submodules/PlatformRestrictionMatching:PlatformRestrictionMatching",
         "//submodules/LocalizedPeerData:LocalizedPeerData",

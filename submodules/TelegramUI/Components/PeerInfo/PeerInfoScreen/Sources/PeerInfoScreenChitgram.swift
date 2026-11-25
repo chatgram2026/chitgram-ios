@@ -9,11 +9,12 @@ import ContextUI
 import UndoUI
 import PresentationDataUtils
 import ChitgramCore
+import ChitgramSettings
 
 extension PeerInfoScreenNode {
     /// Chitgram: the chat's ⋮ menu items from Android (`ChatActivity` header menu), placed after Telegram's own in the
-    /// profile's More menu, which is where Telegram-iOS keeps a chat's actions. Text style, voice to text and
-    /// auto-translate are Novagram's own settings on this base, so only the items it lacks are here.
+    /// profile's More menu, which is where Telegram-iOS keeps a chat's actions. Text style and auto-translate are
+    /// Novagram's own settings on this base, so only the items it lacks are here.
     func chitgramMoreMenuItems(peer: EnginePeer) -> [ContextMenuItem] {
         ChitgramStrings.setLanguageCode(self.presentationData.strings.primaryComponent.languageCode)
         var items: [ContextMenuItem] = [.separator]
@@ -30,6 +31,16 @@ extension PeerInfoScreenNode {
             }
             self.controller?.present(UndoOverlayController(presentationData: self.presentationData, content: .copy(text: "\(chatId) \(ChitgramStrings.get(41))"), elevatedLayout: false, action: { _ in return false }), in: .current)
         })))
+
+        // Voice to text (Android `VoiceTranslateSheet`): pick the languages, then dictate into the chat's input box.
+        if self.peerId.namespace != Namespaces.Peer.SecretChat && chitgramVoiceInputIsAvailable() {
+            items.append(.action(ContextMenuActionItem(text: ChitgramStrings.get(308), icon: { theme in
+                return generateTintedImage(image: UIImage(systemName: "mic"), color: theme.contextMenu.primaryColor)
+            }, action: { [weak self] _, f in
+                f(.dismissWithoutContent)
+                self?.chitgramOpenVoiceToText(peerId: peer.id)
+            })))
+        }
 
         // One-time voice & video by default in this chat (Android `ChatFenixSettings`), not for secret chats.
         if self.peerId.namespace != Namespaces.Peer.SecretChat {
@@ -69,6 +80,24 @@ extension PeerInfoScreenNode {
             }
         }
         return items
+    }
+
+    private func chitgramOpenVoiceToText(peerId: EnginePeer.Id) {
+        let chat = peerId.toInt64()
+        chitgramPresentVoiceToText(context: self.context, present: { [weak self] c in
+            self?.controller?.present(c, in: .window(.root))
+        }, completion: { [weak self] text in
+            guard let self else {
+                return
+            }
+            if ChitgramChatBridge.insert(chat: chat, text: text) {
+                // Back to the chat, where the text now waits in the input box.
+                let _ = (self.controller?.navigationController as? NavigationController)?.popViewController(animated: true)
+            } else {
+                UIPasteboard.general.string = text
+                self.controller?.present(UndoOverlayController(presentationData: self.presentationData, content: .copy(text: text), elevatedLayout: false, action: { _ in return false }), in: .current)
+            }
+        })
     }
 
     private func chitgramOpenJoinRequests(peerId: EnginePeer.Id) {

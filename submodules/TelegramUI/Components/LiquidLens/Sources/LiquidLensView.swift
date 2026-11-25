@@ -124,6 +124,16 @@ public final class LiquidLensView: UIView {
     private var legacyContentMaskBlobView: UIImageView?
     private var legacyLiftedContentBlobMaskView: UIImageView?
 
+    // Chitgram: Android's "Selected tab: Color only" (ChatgramTabs STYLE_BOLD): no background under the selection.
+    public var chitgramHidesSelectionBackground: Bool = false {
+        didSet {
+            if self.chitgramHidesSelectionBackground != oldValue {
+                self.lensView?.setValue(self.chitgramHidesSelectionBackground ? UIColor.clear : UIColor(white: 0.0, alpha: 0.1), forKey: "restingBackgroundColor")
+                self.legacySelectionView?.isHidden = self.chitgramHidesSelectionBackground
+            }
+        }
+    }
+
     public var selectedContentView: UIView {
         return self.liftedContainerView
     }

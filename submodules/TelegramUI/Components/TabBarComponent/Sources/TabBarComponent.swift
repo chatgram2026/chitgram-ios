@@ -362,6 +362,8 @@ public final class TabBarComponent: Component {
     public let isCompact: Bool
     // Chitgram: the tabs' names (Android ChatgramTabs labels): 0 every tab, 1 only the selected one, 2 none.
     public let chitgramLabelsMode: Int
+    // Chitgram: the selected tab on a background (0) or in colour only (1), Android ChatgramTabs STYLE_*.
+    public let chitgramSelectedStyle: Int
     
     public init(
         theme: PresentationTheme,
@@ -374,7 +376,8 @@ public final class TabBarComponent: Component {
         outerInsets: UIEdgeInsets,
         axis: Axis,
         isCompact: Bool,
-        chitgramLabelsMode: Int = 0
+        chitgramLabelsMode: Int = 0,
+        chitgramSelectedStyle: Int = 0
     ) {
         self.theme = theme
         self.tintSelectedItem = tintSelectedItem
@@ -387,6 +390,7 @@ public final class TabBarComponent: Component {
         self.axis = axis
         self.isCompact = isCompact
         self.chitgramLabelsMode = chitgramLabelsMode
+        self.chitgramSelectedStyle = chitgramSelectedStyle
     }
     
     public static func ==(lhs: TabBarComponent, rhs: TabBarComponent) -> Bool {
@@ -421,6 +425,9 @@ public final class TabBarComponent: Component {
             return false
         }
         if lhs.chitgramLabelsMode != rhs.chitgramLabelsMode {
+            return false
+        }
+        if lhs.chitgramSelectedStyle != rhs.chitgramSelectedStyle {
             return false
         }
         return true
@@ -884,6 +891,8 @@ public final class TabBarComponent: Component {
                 lensSelectionFrame = CGRect(x: 0.0, y: 0.0, width: 48.0, height: 48.0)
             }
             
+            // Chitgram: Android's "Selected tab" style.
+            self.liquidLensView.chitgramHidesSelectionBackground = component.chitgramSelectedStyle == 1
             self.liquidLensView.update(size: lensSize, cornerRadius: component.axis == .vertical ? lensSize.width * 0.5 : nil, selectionOrigin: lensSelectionFrame.origin, selectionSize: lensSelectionFrame.size, inset: 4.0, isDark: component.theme.overallDarkAppearance, isLifted: self.selectionGestureState != nil && component.isLiftedStateEnabled, isCollapsed: isLensCollapsed, transition: transition.withUserData(LiquidLensView.TransitionInfo(disableAnimationWorkarounds: !component.isLiftedStateEnabled)))
 
             var size = tabsSize

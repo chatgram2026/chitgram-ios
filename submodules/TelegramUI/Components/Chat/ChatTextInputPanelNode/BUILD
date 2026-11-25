@@ -23,6 +23,8 @@ swift_library(
         "DeprecatedDeclaration",
     ],
     deps = [
+        # Chitgram: the dictation mic.
+        "//submodules/ChitgramCore",
         "//submodules/Display",
         "//submodules/LottieSettings:LottieSettings",
         "//submodules/AsyncDisplayKit",

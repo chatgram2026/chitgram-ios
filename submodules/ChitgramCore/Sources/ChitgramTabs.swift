@@ -29,6 +29,10 @@ public enum ChitgramTabs {
     public static let labelsSelected = 1
     public static let labelsNone = 2
 
+    /// The selected tab (Android `STYLE_*`, the same numbers): on a background, or in colour only.
+    public static let styleBackground = 0
+    public static let styleColor = 1
+
     /// Posted when the button beside the tabs is pressed; the root controller acts on it.
     public static let extraButtonPressedNotification = Notification.Name("ChitgramTabsExtraButtonPressed")
 
@@ -134,10 +138,19 @@ public enum ChitgramTabs {
         self.notifyChanged(["tabs_labels"])
     }
 
+    public static func selectedStyle() -> Int {
+        return self.defaults.integer(forKey: "tabs_style")
+    }
+
+    public static func setSelectedStyle(_ value: Int) {
+        self.defaults.set(value, forKey: "tabs_style")
+        self.notifyChanged(["tabs_style"])
+    }
+
     public static func reset() {
-        for key in ["tabs_order", "tabs_hidden", "tabs_customized", "tabs_start", "tabs_extra", "tabs_labels"] {
+        for key in ["tabs_order", "tabs_hidden", "tabs_customized", "tabs_start", "tabs_extra", "tabs_labels", "tabs_style"] {
             self.defaults.removeObject(forKey: key)
         }
-        self.notifyChanged(["tabs_order", "tabs_hidden", "tabs_customized", "tabs_start", "tabs_labels"])
+        self.notifyChanged(["tabs_order", "tabs_hidden", "tabs_customized", "tabs_start", "tabs_labels", "tabs_style"])
     }
 }

@@ -1,5 +1,6 @@
 import Foundation
 import LottieSettings
+import ChitgramCore
 import UniformTypeIdentifiers
 import UIKit
 import Display
@@ -6128,6 +6129,11 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
                     self.interfaceInteraction?.openPremiumGift()
                 case .suggestPost:
                     self.interfaceInteraction?.openSuggestPost(nil, .default)
+                case .chitgramDictation:
+                    // Chitgram: dictation into this chat's input box, with the saved languages.
+                    if let peerId = self.presentationInterfaceState?.chatLocation.peerId {
+                        ChitgramChatBridge.dictate(chat: peerId.toInt64())
+                    }
                 }
                 break
             }

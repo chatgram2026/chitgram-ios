@@ -1797,6 +1797,13 @@ private func novagramSettingsEntries(presentationData: PresentationData, state: 
         entries.append(.developerFooter(presentationData.theme, NovagramDeveloperStrings.footer(langCode: langCode)))
     }
 
+    // Chitgram: Android's switches with no Novagram counterpart: deleted media (Messages), the composer mic
+    // (Message field), the avatar and seconds (Folders and navigation).
+    let chitgramMoreRows: [(Int32, ChitgramPreferences.Key, Int, Int)] = [(240, .archiveMedia, 556, 557), (241, .avatarOpensProfile, 839, 840), (242, .timeWithSeconds, 841, 842), (243, .dictationMicEnabled, 381, 382)]
+    for (id, key, titleId, textId) in chitgramMoreRows {
+        entries.append(.chitgramSwitch(presentationData.theme, id, key.rawValue, ChitgramStrings.get(titleId), ChitgramStrings.get(textId), ChitgramPreferences.shared.bool(key)))
+    }
+
     // Chitgram: Android's layout (FenixSettings): its sections first, under its headers; Novagram's other rows
     // follow in their own sections.
     entries = chitgramAndroidLayout(entries)
@@ -1835,6 +1842,8 @@ private func chitgramAndroidPlace(_ entry: NovagramEntry) -> (section: ItemListS
         place = (1, 10)
     case .deletedMessages:
         place = (1, 20)
+    case let .chitgramSwitch(_, id, _, _, _, _) where id == 240:
+        place = (1, 22)
     case .showViewFirstMessage:
         place = (1, 30)
     // Download.
@@ -1859,6 +1868,9 @@ private func chitgramAndroidPlace(_ entry: NovagramEntry) -> (section: ItemListS
         place = (5, Int(id - 229) * 10)
     case .sendConfirmEnabled:
         place = (5, 40)
+    // Message field: the composer mic.
+    case let .chitgramSwitch(_, id, _, _, _, _) where id == 243:
+        place = (8, 10)
     // Round video.
     case .longPressCameraSelection:
         place = (7, 10)
@@ -1871,6 +1883,10 @@ private func chitgramAndroidPlace(_ entry: NovagramEntry) -> (section: ItemListS
         place = (9, 20)
     case .tabBarEditor:
         place = (9, 30)
+    case let .chitgramSwitch(_, id, _, _, _, _) where id == 241:
+        place = (9, 35)
+    case let .chitgramSwitch(_, id, _, _, _, _) where id == 242:
+        place = (9, 36)
     case .adminFolders:
         place = (9, 40)
     case .addRecommendedFolders:
@@ -1970,6 +1986,14 @@ private func chitgramSwitchSymbol(_ key: String) -> String {
         return "mic.fill"
     case .confirmGif:
         return "photo.fill"
+    case .archiveMedia:
+        return "photo.on.rectangle"
+    case .avatarOpensProfile:
+        return "person.crop.circle"
+    case .timeWithSeconds:
+        return "clock.fill"
+    case .dictationMicEnabled:
+        return "waveform"
     default:
         return "switch.2"
     }
