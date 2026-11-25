@@ -59,6 +59,8 @@ swift_library(
         ":TelegramCallsUIBundle",
     ],
     deps = [
+        # Chitgram: the voice changer in calls.
+        "//submodules/ChitgramVoice",
         "//submodules/SSignalKit/SSignalKit",
         "//submodules/LottieSettings:LottieSettings",
         "//submodules/Postbox:Postbox",

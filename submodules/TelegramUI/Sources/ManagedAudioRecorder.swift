@@ -10,6 +10,7 @@ import OpusBinding
 import ChatPresentationInterfaceState
 import AudioWaveform
 import FFMpegBinding
+import ChitgramVoice
 
 private let kOutputBus: UInt32 = 0
 private let kInputBus: UInt32 = 1
@@ -186,6 +187,8 @@ final class ManagedAudioRecorderContext {
     private var toneRendererAudioSessionActivated = false
     
     private var processSamples = false
+    // Chitgram: the voice changer (Android VoiceEffect) between the microphone and the encoder, one per segment.
+    private var chitgramVoiceEffect: ChitgramVoiceEffect?
     
     private var toneTimer: SwiftSignalKit.Timer?
     private var idleTimerExtensionDisposable: Disposable?
@@ -437,6 +440,8 @@ final class ManagedAudioRecorderContext {
         assert(self.queue.isCurrent())
         
         self.paused = false
+        // Chitgram: the voice changer chosen for voice messages, for this segment.
+        self.chitgramVoiceEffect = ChitgramVoiceChanger.messages.newEffect(sampleRate: 48000)
     
         if self.audioSessionDisposable == nil {
             let queue = self.queue
@@ -525,6 +530,12 @@ final class ManagedAudioRecorderContext {
     func stop() {
         assert(self.queue.isCurrent())
         
+        // Chitgram: what the voice changer still holds (an echo dying away) ends the segment.
+        if let effect = self.chitgramVoiceEffect {
+            self.chitgramVoiceEffect = nil
+            self.chitgramEncode(effect.drain())
+        }
+        
         let state = self.oggWriter.pause()
         
         self.paused = true
@@ -582,6 +593,15 @@ final class ManagedAudioRecorderContext {
             return
         }
         
+        // Chitgram: the voice changer between the microphone and the encoder.
+        if let effect = self.chitgramVoiceEffect, let data = buffer.mData {
+            let samples = Array(UnsafeBufferPointer(start: data.assumingMemoryBound(to: Int16.self), count: Int(buffer.mDataByteSize) / 2))
+            self.chitgramVoiceEffect = nil
+            self.chitgramEncode(effect.process(samples))
+            self.chitgramVoiceEffect = effect
+            return
+        }
+        
         let millisecondsPerPacket = 60
         let encoderPacketSizeInBytes = 16000 / 1000 * millisecondsPerPacket * 2
         
@@ -635,6 +655,24 @@ final class ManagedAudioRecorderContext {
                 }
             }
         }
+    }
+    
+    /// Chitgram: hands the voice changer's samples to the encoder like a buffer from the microphone.
+    private func chitgramEncode(_ samples: [Int16]) {
+        let byteCount = samples.count * 2
+        if byteCount == 0 {
+            return
+        }
+        guard let copy = malloc(byteCount) else {
+            return
+        }
+        samples.withUnsafeBytes { bytes in
+            if let baseAddress = bytes.baseAddress {
+                memcpy(copy, baseAddress, byteCount)
+            }
+        }
+        // Frees the copy.
+        self.processAndDisposeAudioBuffer(AudioBuffer(mNumberChannels: 1, mDataByteSize: UInt32(byteCount), mData: copy))
     }
     
     func processWaveformPreview(samples: UnsafePointer<Int16>, count: Int) {

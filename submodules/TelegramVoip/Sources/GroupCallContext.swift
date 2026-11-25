@@ -1,4 +1,5 @@
 import Foundation
+import ChitgramVoice
 import SwiftSignalKit
 import TgVoipWebrtc
 import TelegramCore
@@ -532,6 +533,11 @@ public final class OngoingGroupCallContext {
 #if os(iOS)
             if sharedAudioDevice == nil && !isStream {
                 self.audioDevice = OngoingCallContext.AudioDevice.create(enableSystemMute: false, enableMicrophone: true)
+                // Chitgram: the call voice changer on a group call's own microphone.
+                let chitgramVoice = ChitgramCallVoiceChanger()
+                self.audioDevice?.setAudioProcessor({ pcm, frames, channels, sampleRate in
+                    chitgramVoice.process(pcm, frames: frames, channels: channels, sampleRate: sampleRate)
+                })
             } else {
                 self.audioDevice = sharedAudioDevice
             }

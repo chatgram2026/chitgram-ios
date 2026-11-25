@@ -13,6 +13,7 @@ swift_library(
     ],
     deps = [
         "//submodules/ChitgramCore",
+        "//submodules/ChitgramVoice",
         "//submodules/ChitgramEngine",
         "//submodules/UndoUI:UndoUI",
         "//submodules/SSignalKit/SwiftSignalKit:SwiftSignalKit",

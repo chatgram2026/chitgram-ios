@@ -70,6 +70,8 @@ swift_library(
     deps = [
         "//submodules/Novagram/PremiumUnlock:NovagramPremiumUnlock",
         "//submodules/ChitgramCore",
+        # Chitgram: the voice changer in voice messages.
+        "//submodules/ChitgramVoice",
         "//submodules/ChitgramEngine",
         "//submodules/ChitgramSettings",
         "//submodules/Novagram/StoryUnlock:NovagramStoryUnlock",

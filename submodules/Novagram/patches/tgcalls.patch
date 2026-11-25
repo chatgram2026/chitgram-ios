@@ -1,5 +1,5 @@
 diff --git a/tgcalls/platform/darwin/iOS/tgcalls_audio_device_ios.h b/tgcalls/platform/darwin/iOS/tgcalls_audio_device_ios.h
-index cfb07f0..01307bf 100644
+index cfb07f0..71a9657 100644
 --- a/tgcalls/platform/darwin/iOS/tgcalls_audio_device_ios.h
 +++ b/tgcalls/platform/darwin/iOS/tgcalls_audio_device_ios.h
 @@ -13,6 +13,8 @@
@@ -11,40 +11,46 @@ index cfb07f0..01307bf 100644
  
  #include "api/scoped_refptr.h"
  #include "api/sequence_checker.h"
-@@ -48,6 +50,10 @@ namespace tgcalls_ios_adm {
+@@ -48,6 +50,13 @@ namespace tgcalls_ios_adm {
  // Recorded audio will be delivered on a real-time internal I/O thread in the
  // audio unit. The audio unit will also ask for audio data to play out on this
  // same thread.
 +// Novagram: call recording tap (HOOKS.md, "Call recording"). Called on the audio thread with the mic PCM after
 +// AEC/NS and with the playout PCM after the call tones. It must copy the samples and return at once.
 +typedef std::function<void(const int16_t *pcm, size_t frames, size_t channels, uint32_t sampleRate, bool isPlayout)> NovagramAudioTap; // Novagram
++// Chitgram: the call voice changer. Called on the audio thread with the mic PCM before WebRTC takes it, to change
++// it in place; it must return at once.
++typedef std::function<void(int16_t *pcm, size_t frames, size_t channels, uint32_t sampleRate)> ChitgramAudioProcessor; // Chitgram
 +
  class AudioDeviceIOS : public AudioDeviceGeneric,
                         public AudioSessionObserver,
                         public VoiceProcessingAudioUnitObserver {
-@@ -154,6 +160,7 @@ class AudioDeviceIOS : public AudioDeviceGeneric,
+@@ -154,6 +163,8 @@ class AudioDeviceIOS : public AudioDeviceGeneric,
    void OnChangedOutputVolume() override;
                             
    void setTone(std::shared_ptr<tgcalls::CallAudioTone> tone);
 +  void setAudioTap(std::shared_ptr<NovagramAudioTap> tap); // Novagram
++  void setAudioProcessor(std::shared_ptr<ChitgramAudioProcessor> processor); // Chitgram
  
    // VoiceProcessingAudioUnitObserver methods.
    OSStatus OnDeliverRecordedData(AudioUnitRenderActionFlags* flags,
-@@ -317,6 +324,9 @@ class AudioDeviceIOS : public AudioDeviceGeneric,
+@@ -317,6 +328,11 @@ class AudioDeviceIOS : public AudioDeviceGeneric,
                             
    std::atomic<bool> _hasTone;
    std::shared_ptr<tgcalls::CallAudioTone> _tone;
 +  void callAudioTap(const int16_t *pcm, size_t frames, size_t channels, uint32_t sampleRate, bool isPlayout); // Novagram
 +  std::mutex audioTapMutex_; // Novagram
 +  std::shared_ptr<NovagramAudioTap> audioTap_; // Novagram
++  std::mutex audioProcessorMutex_; // Chitgram
++  std::shared_ptr<ChitgramAudioProcessor> audioProcessor_; // Chitgram
                             
    bool isBufferPlaying_ = false;
    bool isBufferRecording_ = false;
 diff --git a/tgcalls/platform/darwin/iOS/tgcalls_audio_device_ios.mm b/tgcalls/platform/darwin/iOS/tgcalls_audio_device_ios.mm
-index 0f551cc..a8ca0be 100644
+index 0f551cc..d280ab3 100644
 --- a/tgcalls/platform/darwin/iOS/tgcalls_audio_device_ios.mm
 +++ b/tgcalls/platform/darwin/iOS/tgcalls_audio_device_ios.mm
-@@ -387,6 +387,24 @@ void AudioDeviceIOS::setTone(std::shared_ptr<tgcalls::CallAudioTone> tone) {
+@@ -387,6 +387,30 @@ void AudioDeviceIOS::setTone(std::shared_ptr<tgcalls::CallAudioTone> tone) {
      }));
  }
  
@@ -66,10 +72,29 @@ index 0f551cc..a8ca0be 100644
 +  } // Novagram
 +} // Novagram
 +
++// Chitgram: set like the tap; the audio thread never waits for the setter and skips one buffer when it would.
++void AudioDeviceIOS::setAudioProcessor(std::shared_ptr<ChitgramAudioProcessor> processor) { // Chitgram
++  std::lock_guard<std::mutex> lock(audioProcessorMutex_); // Chitgram
++  audioProcessor_.swap(processor); // Chitgram
++} // Chitgram
++
  OSStatus AudioDeviceIOS::OnDeliverRecordedData(AudioUnitRenderActionFlags* flags,
                                                 const AudioTimeStamp* time_stamp,
                                                 UInt32 bus_number,
-@@ -435,6 +453,7 @@ OSStatus AudioDeviceIOS::OnDeliverRecordedData(AudioUnitRenderActionFlags* flags
+@@ -432,9 +456,20 @@ OSStatus AudioDeviceIOS::OnDeliverRecordedData(AudioUnitRenderActionFlags* flags
+   // Use the FineAudioBuffer instance to convert between native buffer size
+   // and the 10ms buffer size used by WebRTC.
+  
++  { // Chitgram: the voice changer, before WebRTC and the recording tap take the mic PCM.
++    std::shared_ptr<ChitgramAudioProcessor> processor; // Chitgram
++    if (audioProcessorMutex_.try_lock()) { // Chitgram
++      processor = audioProcessor_; // Chitgram
++      audioProcessorMutex_.unlock(); // Chitgram
++    } // Chitgram
++    if (processor && *processor) { // Chitgram
++      (*processor)(record_audio_buffer_.data(), num_frames, record_parameters_.channels(), (uint32_t)record_parameters_.sample_rate()); // Chitgram
++    } // Chitgram
++  } // Chitgram
    if (isBufferRecording_) {
      fine_audio_buffer_->DeliverRecordedData(record_audio_buffer_, kFixedRecordDelayEstimate);
    }
@@ -77,7 +102,7 @@ index 0f551cc..a8ca0be 100644
    return noErr;
  }
  
-@@ -544,6 +563,7 @@ OSStatus AudioDeviceIOS::OnGetPlayoutData(AudioUnitRenderActionFlags* flags,
+@@ -544,6 +579,7 @@ OSStatus AudioDeviceIOS::OnGetPlayoutData(AudioUnitRenderActionFlags* flags,
        }
    }
  
@@ -86,38 +111,41 @@ index 0f551cc..a8ca0be 100644
  }
  
 diff --git a/tgcalls/platform/darwin/iOS/tgcalls_audio_device_module_ios.h b/tgcalls/platform/darwin/iOS/tgcalls_audio_device_module_ios.h
-index 4dae3a0..b426313 100644
+index 4dae3a0..1a9f5dd 100644
 --- a/tgcalls/platform/darwin/iOS/tgcalls_audio_device_module_ios.h
 +++ b/tgcalls/platform/darwin/iOS/tgcalls_audio_device_module_ios.h
-@@ -131,6 +131,7 @@ class AudioDeviceModuleIOS : public AudioDeviceModule {
+@@ -131,6 +131,8 @@ class AudioDeviceModuleIOS : public AudioDeviceModule {
    int32_t GetPlayoutUnderrunCount() const override;
      
    void setTone(std::shared_ptr<tgcalls::CallAudioTone> tone);
 +  void setAudioTap(std::shared_ptr<NovagramAudioTap> tap); // Novagram
++  void setAudioProcessor(std::shared_ptr<ChitgramAudioProcessor> processor); // Chitgram
  
  #if defined(WEBRTC_IOS)
    int GetPlayoutAudioParameters(AudioParameters* params) const override;
-@@ -157,6 +158,7 @@ class AudioDeviceModuleIOS : public AudioDeviceModule {
+@@ -157,6 +159,8 @@ class AudioDeviceModuleIOS : public AudioDeviceModule {
    // with Terminate() and retried through Init(), which creates a fresh
    // AudioDeviceIOS, so the tone must outlive the device instance.
    std::shared_ptr<tgcalls::CallAudioTone> lastTone_;
 +  std::shared_ptr<NovagramAudioTap> lastAudioTap_; // Novagram
++  std::shared_ptr<ChitgramAudioProcessor> lastAudioProcessor_; // Chitgram
  };
  }  // namespace tgcalls_ios_adm
  }  // namespace webrtc
 diff --git a/tgcalls/platform/darwin/iOS/tgcalls_audio_device_module_ios.mm b/tgcalls/platform/darwin/iOS/tgcalls_audio_device_module_ios.mm
-index b672f88..25db28c 100644
+index b672f88..8810eaf 100644
 --- a/tgcalls/platform/darwin/iOS/tgcalls_audio_device_module_ios.mm
 +++ b/tgcalls/platform/darwin/iOS/tgcalls_audio_device_module_ios.mm
-@@ -117,6 +117,7 @@ AudioDeviceModuleIOS::AudioDeviceModuleIOS(bool bypass_voice_processing, bool di
+@@ -117,6 +117,8 @@ AudioDeviceModuleIOS::AudioDeviceModuleIOS(bool bypass_voice_processing, bool di
      if (lastTone_) {
        audio_device_->setTone(lastTone_);
      }
 +    if (lastAudioTap_) { audio_device_->setAudioTap(lastAudioTap_); } // Novagram
++    if (lastAudioProcessor_) { audio_device_->setAudioProcessor(lastAudioProcessor_); } // Chitgram
      return 0;
    }
  
-@@ -759,6 +760,11 @@ AudioDeviceModuleIOS::AudioDeviceModuleIOS(bool bypass_voice_processing, bool di
+@@ -759,6 +761,16 @@ AudioDeviceModuleIOS::AudioDeviceModuleIOS(bool bypass_voice_processing, bool di
      }
    }
  
@@ -125,6 +153,11 @@ index b672f88..25db28c 100644
 +    lastAudioTap_ = tap; // Novagram
 +    if (audio_device_) { audio_device_->setAudioTap(tap); } // Novagram
 +  } // Novagram
++
++  void AudioDeviceModuleIOS::setAudioProcessor(std::shared_ptr<ChitgramAudioProcessor> processor) { // Chitgram
++    lastAudioProcessor_ = processor; // Chitgram
++    if (audio_device_) { audio_device_->setAudioProcessor(processor); } // Chitgram
++  } // Chitgram
 +
  #if defined(WEBRTC_IOS)
    int AudioDeviceModuleIOS::GetPlayoutAudioParameters(

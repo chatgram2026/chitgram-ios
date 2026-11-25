@@ -991,6 +991,23 @@ static std::atomic<bool> sharedCallAudioDeviceLegacyBehavior{false};
     #endif
 } // Novagram
 
+- (void)setAudioProcessor:(void (^ _Nullable)(int16_t * _Nonnull pcm, size_t frames, size_t channels, uint32_t sampleRate))audioProcessor { // Chitgram
+    #ifdef WEBRTC_IOS
+    std::shared_ptr<webrtc::tgcalls_ios_adm::ChitgramAudioProcessor> nativeProcessor; // Chitgram
+    if (audioProcessor) { // Chitgram
+        void (^copiedProcessor)(int16_t *, size_t, size_t, uint32_t) = [audioProcessor copy]; // Chitgram
+        nativeProcessor = std::make_shared<webrtc::tgcalls_ios_adm::ChitgramAudioProcessor>([copiedProcessor](int16_t *pcm, size_t frames, size_t channels, uint32_t sampleRate) { // Chitgram
+            copiedProcessor(pcm, frames, channels, sampleRate); // Chitgram
+        }); // Chitgram
+    } // Chitgram
+    _audioDeviceModule->perform([nativeProcessor](tgcalls::SharedAudioDeviceModule *audioDeviceModule) { // Chitgram
+        WrappedAudioDeviceModuleIOS *deviceModule = (WrappedAudioDeviceModuleIOS *)audioDeviceModule->audioDeviceModule().get(); // Chitgram
+        webrtc::tgcalls_ios_adm::AudioDeviceModuleIOS *deviceModule_iOS = (webrtc::tgcalls_ios_adm::AudioDeviceModuleIOS *)deviceModule->WrappedInstance().get(); // Chitgram
+        deviceModule_iOS->setAudioProcessor(nativeProcessor); // Chitgram
+    }); // Chitgram
+    #endif
+} // Chitgram
+
 - (std::shared_ptr<tgcalls::ThreadLocalObject<tgcalls::SharedAudioDeviceModule>>)getAudioDeviceModule {
     return _audioDeviceModule;
 }

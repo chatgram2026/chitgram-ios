@@ -14,6 +14,8 @@ swift_library(
     deps = [
         "//submodules/SSignalKit/SwiftSignalKit:SwiftSignalKit",
         "//submodules/TelegramCore:TelegramCore",
+        # Chitgram: the voice changer in group calls.
+        "//submodules/ChitgramVoice",
         "//submodules/TelegramUIPreferences:TelegramUIPreferences",
         "//submodules/TgVoipWebrtc:TgVoipWebrtc",
         "//submodules/FFMpegBinding",

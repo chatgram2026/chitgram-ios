@@ -77,6 +77,10 @@
 /// The block must copy the samples and return at once. nil removes it.
 - (void)setAudioTap:(void (^ _Nullable)(int16_t const * _Nonnull pcm, size_t frames, size_t channels, uint32_t sampleRate, bool isPlayout))audioTap; // Novagram
 
+/// Chitgram: the call voice changer, called on the audio thread with the microphone PCM before WebRTC takes it, to
+/// change it in place. The block must return at once. nil removes it.
+- (void)setAudioProcessor:(void (^ _Nullable)(int16_t * _Nonnull pcm, size_t frames, size_t channels, uint32_t sampleRate))audioProcessor; // Chitgram
+
 /// Stops the real device for good and ignores every later activation change.
 - (void)stop;
 

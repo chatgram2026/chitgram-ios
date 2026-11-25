@@ -877,6 +877,11 @@ public final class OngoingCallContext {
         public func setAudioTap(_ tap: ((UnsafePointer<Int16>, Int, Int, UInt32, Bool) -> Void)?) { // Novagram
             self.impl.setAudioTap(tap) // Novagram
         } // Novagram
+
+        /// Chitgram: the call voice changer; `processor` runs on the audio thread and changes the microphone PCM in place.
+        public func setAudioProcessor(_ processor: ((UnsafeMutablePointer<Int16>, Int, Int, UInt32) -> Void)?) { // Chitgram
+            self.impl.setAudioProcessor(processor) // Chitgram
+        } // Chitgram
     }
     
     public static func setupAudioSession() {

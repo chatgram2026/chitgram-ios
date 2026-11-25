@@ -1,4 +1,5 @@
 import Foundation
+import ChitgramVoice
 import SwiftSignalKit
 import TelegramCore
 import TelegramVoip
@@ -151,6 +152,11 @@ public final class SharedCallAudioContext {
         }
         
         self.audioDevice = OngoingCallContext.AudioDevice.create(enableSystemMute: false, enableMicrophone: enableMicrophone)
+        // Chitgram: the call voice changer (Android CallVoiceChanger) on this call's microphone.
+        let chitgramVoice = ChitgramCallVoiceChanger()
+        self.audioDevice?.setAudioProcessor({ pcm, frames, channels, sampleRate in
+            chitgramVoice.process(pcm, frames: frames, channels: channels, sampleRate: sampleRate)
+        })
         
         self.wantsSpeakerByDefault = defaultToSpeaker
         var defaultToSpeaker = defaultToSpeaker

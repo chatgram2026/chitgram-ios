@@ -38,7 +38,9 @@ unread reminder, auto-accept, …). Branch **`chitgram-nova`** starts from it.
   confirmations, the tour, big files, the auto-accept chat picker, per-chat items (chat id, one-time media, join
   requests, join with all accounts), the account limit, Android's app icons, the sponsored search result and growth
   counters, the region auto-proxy, the per-account notification switch, and the Sozlamalar screen in Android's
-  section order. OCR: Telegram's own photo text recognition (copy, share, translate) covers it. Still to do: the
+  section order, and (2026-11-25) clock seconds, avatar-opens-profile, the tab style, the dictation mic, kept media of
+  deleted messages with "Clear saved history", and the voice changer (messages and calls; `ChitgramVoice`, a tgcalls
+  patch hook). OCR: Telegram's own photo text recognition (copy, share, translate) covers it. Still to do: the
   roulettes (their rows say "Coming soon" (447) by the owner's choice). Not on iOS: APK shield (owner), Android's
   extra tab button (Novagram's search button beside the tabs stands for it).
 - **Settings shared with Android** (`ChitgramCloud`: a copy in Saved Messages, Android's format and keys). Where a
