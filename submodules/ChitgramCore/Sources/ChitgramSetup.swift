@@ -12,4 +12,7 @@ public func chitgramConfigure(appGroupName: String) {
     let directory = base.appendingPathComponent("chitgram", isDirectory: true)
     try? fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
     ChitgramEditHistory.shared.configure(directory: directory)
+
+    // Android's settings copy reaches Novagram's features, and their changes reach the copy.
+    ChitgramNovagramBridge.start()
 }

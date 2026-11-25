@@ -36,7 +36,11 @@ public enum ChitgramTabs {
         return ChitgramPreferences.shared.userDefaults
     }
 
-    private static func notifyChanged() {
+    private static func notifyChanged(_ keys: [String]) {
+        // Stamped for the settings copy in Saved Messages, which Android shares (ChitgramCloud).
+        for key in keys {
+            ChitgramPreferences.shared.noteChanged(rawKey: key)
+        }
         NotificationCenter.default.post(name: self.didChangeNotification, object: nil)
         ChitgramPreferences.shared.notifyChanged()
     }
@@ -64,7 +68,7 @@ public enum ChitgramTabs {
     public static func setOrder(_ order: [Int]) {
         self.defaults.set(order.map { "\($0)" }.joined(separator: ","), forKey: "tabs_order")
         self.defaults.set(true, forKey: "tabs_customized")
-        self.notifyChanged()
+        self.notifyChanged(["tabs_order", "tabs_customized"])
     }
 
     public static func hidden() -> Set<Int> {
@@ -93,19 +97,23 @@ public enum ChitgramTabs {
         }
         self.defaults.set(hidden.sorted().map { "\($0)" }.joined(separator: ","), forKey: "tabs_hidden")
         self.defaults.set(true, forKey: "tabs_customized")
-        self.notifyChanged()
+        self.notifyChanged(["tabs_hidden", "tabs_customized"])
         return true
     }
 
     /// The tab the app opens on; Chats by default.
     public static func startTab() -> Int {
-        let value = self.defaults.object(forKey: "tabs_start") as? Int ?? self.chats
+        var value = self.defaults.object(forKey: "tabs_start") as? Int ?? self.chats
+        // Android's Profile tab (4), from the shared copy: Settings stands for it here.
+        if value == 4 {
+            value = self.settings
+        }
         return self.isVisible(value) ? value : self.chats
     }
 
     public static func setStartTab(_ tab: Int) {
         self.defaults.set(tab, forKey: "tabs_start")
-        self.notifyChanged()
+        self.notifyChanged(["tabs_start"])
     }
 
     public static func extraButton() -> Int {
@@ -114,7 +122,7 @@ public enum ChitgramTabs {
 
     public static func setExtraButton(_ value: Int) {
         self.defaults.set(value, forKey: "tabs_extra")
-        self.notifyChanged()
+        self.notifyChanged([])
     }
 
     public static func labelsMode() -> Int {
@@ -123,13 +131,13 @@ public enum ChitgramTabs {
 
     public static func setLabelsMode(_ value: Int) {
         self.defaults.set(value, forKey: "tabs_labels")
-        self.notifyChanged()
+        self.notifyChanged(["tabs_labels"])
     }
 
     public static func reset() {
         for key in ["tabs_order", "tabs_hidden", "tabs_customized", "tabs_start", "tabs_extra", "tabs_labels"] {
             self.defaults.removeObject(forKey: key)
         }
-        self.notifyChanged()
+        self.notifyChanged(["tabs_order", "tabs_hidden", "tabs_customized", "tabs_start", "tabs_labels"])
     }
 }

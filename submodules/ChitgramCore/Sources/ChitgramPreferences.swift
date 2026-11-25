@@ -166,6 +166,20 @@ public final class ChitgramPreferences {
         }
     }
 
+    /// For Chitgram data kept under its own keys (the tab bar): stamps the change for the settings sync and tells
+    /// observers, as `set` does for a switch.
+    public func noteChanged(rawKey: String) {
+        self.setChangeTime(rawKey, Int64(Date().timeIntervalSince1970 * 1000.0))
+        let notify = {
+            NotificationCenter.default.post(name: ChitgramPreferences.didChangeNotification, object: self, userInfo: ["key": rawKey])
+        }
+        if Thread.isMainThread {
+            notify()
+        } else {
+            DispatchQueue.main.async(execute: notify)
+        }
+    }
+
     /// Makes open screens redraw without a value changing, e.g. to put a switch back after a refused or cancelled
     /// action.
     public func notifyChanged() {

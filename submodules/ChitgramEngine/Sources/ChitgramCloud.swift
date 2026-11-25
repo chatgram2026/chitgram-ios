@@ -35,7 +35,10 @@ public enum ChitgramCloud {
         "confirm_gif": "b", "confirm_sticker": "b", "confirm_voice": "b", "selected_style": "i",
         "auto_answer_active": "b", "auto_answer_text": "s", "auto_accept_join": "b", "round_camera_front": "b",
         "reminder_enabled": "b", "reminder_delay_min": "i", "reminder_sound": "i",
-        "hide_tabs": "b", "folder_icon_mode": "b"
+        "hide_tabs": "b", "folder_icon_mode": "b",
+        // The bottom tab bar (Android ChatgramTabs; the same tab ids, Android's Profile tab stands for Settings here).
+        // Its extra button and style are Android's only.
+        "tabs_order": "s", "tabs_hidden": "s", "tabs_customized": "b", "tabs_start": "i", "tabs_labels": "i"
     ]
 
     private struct Item {
@@ -163,12 +166,20 @@ public enum ChitgramCloud {
 
             // The cloud's newer settings come in first.
             var times = ChitgramPreferences.shared.changeTimes()
+            var tabsChanged = false
             for (key, item) in cloud {
                 guard self.keys[key] != nil, item.at > (times[key] ?? 0) else {
                     continue
                 }
                 ChitgramPreferences.shared.applySynced(rawKey: key, value: item.type == "x" ? nil : self.decode(item), at: item.at)
                 times[key] = item.at
+                if key.hasPrefix("tabs_") {
+                    tabsChanged = true
+                }
+            }
+            if tabsChanged {
+                // The tab bar is rebuilt with the other phone's order.
+                NotificationCenter.default.post(name: ChitgramTabs.didChangeNotification, object: nil)
             }
             // Settings this device had before it ever synced count as set now, so they get shared too — after the
             // cloud has had its say, so a fresh phone never overwrites the old one.

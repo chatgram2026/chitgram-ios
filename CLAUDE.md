@@ -41,6 +41,10 @@ unread reminder, auto-accept, …). Branch **`chitgram-nova`** starts from it.
   section order. OCR: Telegram's own photo text recognition (copy, share, translate) covers it. Still to do: the
   roulettes (their rows say "Coming soon" (447) by the owner's choice). Not on iOS: APK shield (owner), Android's
   extra tab button (Novagram's search button beside the tabs stands for it).
+- **Settings shared with Android** (`ChitgramCloud`: a copy in Saved Messages, Android's format and keys). Where a
+  feature is Novagram's, its `pro_messager` key is kept equal to Android's key by `ChitgramNovagramBridge`
+  (ChitgramCore); a new shared Novagram setting needs a pair there. Badges (the blue "Ch" mark) read Firestore
+  over REST with the Codemagic `CHITGRAM_FIREBASE_*` values; checked working with them on 2026-11-25.
 - **Free builds:** `.github/workflows/chitgram-testflight.yml` does codemagic.yaml's TestFlight build on GitHub's
   free runners (started by hand; registered on the default branch `chitgram`). GitHub has paused Actions on this
   fork ("due to the scale of GitHub Actions usage"); only the owner can re-enable it, and it needs the repository
