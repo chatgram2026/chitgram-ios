@@ -4639,6 +4639,8 @@ func replayFinalState(
                                 transaction.updateMessage(messageId, update: { _ in
                                     return .update(StoreMessage(id: message.id, customStableId: nil, globallyUniqueId: message.globallyUniqueId, groupingKey: message.groupingKey, threadId: message.threadId, timestamp: message.timestamp, flags: StoreMessageFlags(message.flags), tags: message.tags, globalTags: message.globalTags, localTags: message.localTags, forwardInfo: storeForwardInfo, authorId: message.author?.id, text: message.text, attributes: newAttributes, media: message.media))
                                 })
+                                // Chitgram: a copy of its downloaded media (Android "Keep deleted media too").
+                                chitgramArchiveDeletedMedia(mediaBox: mediaBox, message: message)
                                 retainedMessageIds.insert(messageId)
                             }
                         }
@@ -4697,6 +4699,8 @@ func replayFinalState(
                                 transaction.updateMessage(id, update: { _ in
                                     return .update(StoreMessage(id: message.id, customStableId: nil, globallyUniqueId: message.globallyUniqueId, groupingKey: message.groupingKey, threadId: message.threadId, timestamp: message.timestamp, flags: StoreMessageFlags(message.flags), tags: message.tags, globalTags: message.globalTags, localTags: message.localTags, forwardInfo: storeForwardInfo, authorId: message.author?.id, text: message.text, attributes: newAttributes, media: message.media))
                                 })
+                                // Chitgram: a copy of its downloaded media (Android "Keep deleted media too").
+                                chitgramArchiveDeletedMedia(mediaBox: mediaBox, message: message)
                                 retainedMessageIds.insert(id)
                             }
                         } else {

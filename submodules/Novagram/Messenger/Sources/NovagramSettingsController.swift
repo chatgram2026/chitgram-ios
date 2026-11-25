@@ -100,6 +100,8 @@ private enum NovagramEntry: ItemListNodeEntry {
     case chitgramSwitch(PresentationTheme, Int32, String, String, String, Bool)
     // Chitgram: the header of one of Android's sections (its index in `chitgramAndroidSectionTitles`, its title).
     case chitgramHeader(Int32, String)
+    // Chitgram: "Clear saved history" with the size it takes (Android FenixSettings HISTORY_CLEAR).
+    case chitgramClearHistory(PresentationTheme, String, String)
     // Chitgram: the keyword watch (Android: Chitgram settings, "Keyword watch").
     case keywordWatch(PresentationTheme, String)
     case messagingFooter(PresentationTheme, String)
@@ -205,6 +207,8 @@ private enum NovagramEntry: ItemListNodeEntry {
         switch self {
         case let .chitgramHeader(index, _):
             return chitgramAndroidSectionId(index)
+        case .chitgramClearHistory:
+            return chitgramAndroidSectionId(1)
         case .chatHeader, .calls, .deletedMessages, .showViewFirstMessage, .showGhostMode, .longPressCameraSelection, .editedHistoryEnabled, .roundVideoFromGallery, .forwardHideNames, .callRecording, .chatFooter:
             return NovagramSection.chat.rawValue
         case .interfaceHeader, .hideFolders, .showStories, .showMutualContactSymbol, .unlimitedPins, .tabBarEditor, .interfaceFooter:
@@ -240,6 +244,8 @@ private enum NovagramEntry: ItemListNodeEntry {
         switch self {
         case let .chitgramHeader(index, _):
             return 400 + index
+        case .chitgramClearHistory:
+            return 244
         // Chat
         case .chatHeader:                return 0
         case .calls:                     return 1
@@ -353,6 +359,8 @@ private enum NovagramEntry: ItemListNodeEntry {
         switch self {
         case let .chitgramHeader(index, _):
             return chitgramAndroidOrder(index, 0)
+        case .chitgramClearHistory:
+            return chitgramAndroidOrder(1, 24)
         case .callDataSaving:
             return 97 * 10 + 5
         case .callRecording:
@@ -379,6 +387,8 @@ private enum NovagramEntry: ItemListNodeEntry {
         switch lhs {
         case let .chitgramHeader(lhsIndex, lhsText):
             if case let .chitgramHeader(rhsIndex, rhsText) = rhs, lhsIndex == rhsIndex, lhsText == rhsText { return true } else { return false }
+        case let .chitgramClearHistory(lhsTheme, lhsTitle, lhsLabel):
+            if case let .chitgramClearHistory(rhsTheme, rhsTitle, rhsLabel) = rhs, lhsTheme === rhsTheme, lhsTitle == rhsTitle, lhsLabel == rhsLabel { return true } else { return false }
         case let .chatHeader(lhsText):
             if case let .chatHeader(rhsText) = rhs, lhsText == rhsText { return true } else { return false }
         case let .calls(lhsTheme, lhsTitle):
@@ -656,6 +666,10 @@ private enum NovagramEntry: ItemListNodeEntry {
         switch self {
         case let .chitgramHeader(_, text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
+        case let .chitgramClearHistory(_, title, label):
+            return ItemListDisclosureItem(presentationData: presentationData, icon: novagramSettingsIcon(systemName: "trash.fill", color: .gray), title: title, label: label, sectionId: self.section, style: .blocks, action: {
+                arguments.openClearSavedHistory()
+            }, tag: self.novagramTag)
         // ─── ACCOUNTLAR ───
         case let .accountsHeader(text):
             return ItemListSectionHeaderItem(presentationData: presentationData, text: text, sectionId: self.section)
@@ -1598,7 +1612,7 @@ private func sttSupportedLanguages() -> [(String, String)] {
     ]
 }
 
-private func novagramSettingsEntries(presentationData: PresentationData, state: NovagramSettingsState, carPlayStatus: NovagramCarPlayStatus, callDataSaving: Bool) -> [NovagramEntry] {
+private func novagramSettingsEntries(presentationData: PresentationData, state: NovagramSettingsState, carPlayStatus: NovagramCarPlayStatus, callDataSaving: Bool, chitgramHistorySize: String = "\u{2026}") -> [NovagramEntry] {
     var entries: [NovagramEntry] = []
     let l10n = NovagramL10n(presentationData.strings)
     // Resolved once at entry-build time; used by local string namespaces throughout.
@@ -1803,6 +1817,7 @@ private func novagramSettingsEntries(presentationData: PresentationData, state: 
     for (id, key, titleId, textId) in chitgramMoreRows {
         entries.append(.chitgramSwitch(presentationData.theme, id, key.rawValue, ChitgramStrings.get(titleId), ChitgramStrings.get(textId), ChitgramPreferences.shared.bool(key)))
     }
+    entries.append(.chitgramClearHistory(presentationData.theme, ChitgramStrings.get(864), chitgramHistorySize))
 
     // Chitgram: Android's layout (FenixSettings): its sections first, under its headers; Novagram's other rows
     // follow in their own sections.
@@ -2090,6 +2105,7 @@ private final class NovagramSettingsArguments {
     var openTabBarEditor: () -> Void = {}
     var openAutoAcceptChats: () -> Void = {}
     var openAutoAnswerText: () -> Void = {}
+    var openClearSavedHistory: () -> Void = {}
 
     init(openAccounts: @escaping () -> Void, openAbout: @escaping () -> Void, openNovagramBots: @escaping () -> Void, openCalls: @escaping () -> Void, updateShowDeletedMessages: @escaping (Bool) -> Void, updateHideFolders: @escaping (Bool) -> Void, updateShowStories: @escaping (Bool) -> Void, updateShowMutualContactSymbol: @escaping (Bool) -> Void, updateShowGhostMode: @escaping (Bool) -> Void, updateShowViewFirstMessage: @escaping (Bool) -> Void, updateLongPressCameraSelection: @escaping (Bool) -> Void, updateEditedHistoryEnabled: @escaping (Bool) -> Void, updateRoundVideoFromGallery: @escaping (Bool) -> Void, updateForwardHideNames: @escaping (Bool) -> Void, updateUnlimitedPins: @escaping (Bool) -> Void, updateCallDataSaving: @escaping (Bool) -> Void, updateTranslateMessages: @escaping (Bool) -> Void, openTranslationSettings: @escaping () -> Void, openTextStyleSettings: @escaping () -> Void, openAutoTextSettings: @escaping () -> Void, openAutoTranslateSettings: @escaping () -> Void, updateSttEnabled: @escaping (Bool) -> Void, openSttLanguageSettings: @escaping () -> Void, updateBlockForeignUsers: @escaping (Bool) -> Void, updateEnableNovagramProxy: @escaping (Bool) -> Void, updateChatLockMaster: @escaping (Bool) -> Void, updateSecretVault: @escaping (Bool) -> Void, updateSecretVaultBiometric: @escaping (Bool) -> Void, updateWhiteThemeAccent: @escaping (Bool) -> Void, updateVoiceTranslate: @escaping (Bool) -> Void, updateAutoDownloadDisabled: @escaping (Bool) -> Void, updateSendTranslateConfirm: @escaping (Bool) -> Void, updateSendConfirmEnabled: @escaping (Bool) -> Void, updateAutoStickerEnabled: @escaping (Bool) -> Void, updateHeartEffectEnabled: @escaping (Bool) -> Void, updateReminderEnabled: @escaping (Bool) -> Void, openReminderTimeSettings: @escaping () -> Void, openReminderSoundSettings: @escaping () -> Void, addRecommendedFolders: @escaping () -> Void, openFolderStyle: @escaping () -> Void, updateChannelHistory: @escaping (Bool) -> Void, updateSettingsLinks: @escaping (Bool) -> Void, shareNovagramProLink: @escaping () -> Void, updateAutoAccept: @escaping (Bool) -> Void, updateAdminFolders: @escaping (Bool) -> Void, updateFoldersPrompt: @escaping (Bool) -> Void, updateShowAds: @escaping (Bool) -> Void, updateAdEventsOff: @escaping (Bool) -> Void, updateCurrencyRatesView: @escaping (Bool) -> Void, updateAdsPanel: @escaping (Bool) -> Void, updateStoryUnlock: @escaping (Bool) -> Void, updateTranslateChatsUnlock: @escaping (Bool) -> Void, openCarPlay: @escaping () -> Void) {
         self.openAccounts = openAccounts
@@ -2874,6 +2890,31 @@ public func novagramSettingsController(context: AccountContext, highlightFeature
     arguments.openAutoAnswerText = {
         pushControllerImpl?(chitgramAutoAnswerTextController(context: context))
     }
+    // Chitgram: the saved history's size, counted chat by chat when the screen opens and after a clear.
+    let chitgramHistorySizePromise = ValuePromise<String>("\u{2026}", ignoreRepeated: true)
+    let chitgramHistorySizeDisposable = MetaDisposable()
+    let chitgramRefreshHistorySize: () -> Void = {
+        chitgramHistorySizeDisposable.set((chitgramSavedHistorySize(account: context.account)
+        |> deliverOnMainQueue).startStandalone(next: { size in
+            chitgramHistorySizePromise.set(ByteCountFormatter.string(fromByteCount: size, countStyle: .file))
+        }))
+    }
+    chitgramRefreshHistorySize()
+    arguments.openClearSavedHistory = {
+        let presentationData = context.sharedContext.currentPresentationData.with { $0 }
+        ChitgramStrings.setLanguageCode(presentationData.strings.primaryComponent.languageCode)
+        presentControllerImpl?(textAlertController(context: context, title: ChitgramStrings.get(864), text: ChitgramStrings.get(866), actions: [
+            TextAlertAction(type: .genericAction, title: presentationData.strings.Common_Cancel, action: {}),
+            TextAlertAction(type: .destructiveAction, title: ChitgramStrings.get(867), action: {
+                chitgramHistorySizePromise.set("\u{2026}")
+                let _ = chitgramClearSavedHistory(account: context.account).startStandalone(completed: {
+                    Queue.mainQueue().async {
+                        chitgramRefreshHistorySize()
+                    }
+                })
+            })
+        ]))
+    }
     let refreshDeveloperFlags: () -> Void = {
         updateState { state in
             var state = state
@@ -2914,17 +2955,19 @@ public func novagramSettingsController(context: AccountContext, highlightFeature
         statePromise.get(),
         NovagramCarPlayStatus.signal(context: context),
         NovagramCallDataSaving.isOnSignal(accountManager: context.sharedContext.accountManager),
-        ChitgramPreferences.shared.changes
+        ChitgramPreferences.shared.changes,
+        chitgramHistorySizePromise.get()
     ) |> deliverOnMainQueue
         |> afterDisposed {
             NotificationCenter.default.removeObserver(callRecordingObserver)
             NotificationCenter.default.removeObserver(developerFlagsObserver)
+            chitgramHistorySizeDisposable.dispose()
         }
-        |> map { presentationData, state, carPlayStatus, callDataSaving, _ -> (ItemListControllerState, (ItemListNodeState, Any)) in
+        |> map { presentationData, state, carPlayStatus, callDataSaving, _, chitgramHistorySize -> (ItemListControllerState, (ItemListNodeState, Any)) in
             let controllerState = ItemListControllerState(presentationData: ItemListPresentationData(presentationData), title: .text(chitgramSettingsTitle(presentationData)), leftNavigationButton: nil, rightNavigationButton: ItemListNavigationButton(content: .text("?"), style: .regular, enabled: true, action: {
                 startTourImpl?()
             }), backNavigationButton: ItemListBackButton(title: presentationData.strings.Common_Back))
-            let entries = novagramSettingsEntries(presentationData: presentationData, state: state, carPlayStatus: carPlayStatus, callDataSaving: callDataSaving)
+            let entries = novagramSettingsEntries(presentationData: presentationData, state: state, carPlayStatus: carPlayStatus, callDataSaving: callDataSaving, chitgramHistorySize: chitgramHistorySize)
             _ = latestEntries.swap(entries)
             // ensureVisibleItemTag only reaches rows whose nodes already exist, so a row far down
             // the list also needs an index-based scroll. ItemListNodeState applies this on the

@@ -27,6 +27,8 @@ public final class ChitgramAccountServices {
         ChitgramAnalytics.addAccountIfNew(accountPeerId: context.account.peerId)
         // Chitgram badges: lookups through Firestore, and this account's own badge.
         ChitgramBadgeService.start(context: context)
+        // Kept media of deleted messages back into the media box after a cache clear.
+        chitgramRestoreDeletedMedia(account: context.account)
         // Chitgram Premium: the prices and this account's status, read again at every launch (Android: on resume).
         ChitgramKeywords.shared.isPremium = ChitgramPremium.isActive(accountPeerId: context.account.peerId)
         let accountPeerId = context.account.peerId
@@ -51,6 +53,7 @@ public final class ChitgramAccountServices {
             ChitgramAutoPost.refill(context: context)
             ChitgramAppNotices.show(context: context)
             ChitgramCloud.onResume(context: context)
+            chitgramRestoreDeletedMedia(account: context.account)
         })
     }
 
