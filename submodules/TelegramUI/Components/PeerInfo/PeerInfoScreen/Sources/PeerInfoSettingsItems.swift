@@ -21,18 +21,21 @@ import NovagramChannelStats
 import NovagramReviewPrompt
 import WalletContext
 
+// Chitgram: in Android's order (SettingsActivity.fillItems): the profile actions and suggestions, Accounts, the
+// Chitgram section, the main block (Account, Chat settings, Privacy, Notifications, Data, Folders, Devices, Power
+// saving, Language), Premium and the rest, Telegram-iOS's own shortcuts, and Help.
 enum SettingsSection: Int, CaseIterable {
-    case novagramMessenger
     case edit
     case phone
     case accounts
-    case myProfile
+    case novagramMessenger
     case wallet
     case proxy
-    case apps
-    case shortcuts
+    case myProfile
     case advanced
     case payment
+    case apps
+    case shortcuts
     case extra
     case support
 }
@@ -129,6 +132,8 @@ func settingsItems(data: PeerInfoScreenData?, context: AccountContext, presentat
         // account rows may exist, but "Barcha accountlar" and "Add Account" must stay reachable even
         // when every other account is suspended.
         do {
+            // Chitgram: Android's "Accounts" header.
+            items[.accounts]!.append(PeerInfoScreenHeaderItem(id: "chitgram_accounts_header", text: NovagramL10n(presentationData.strings).accounts_sectionHeader))
             for (peerAccountContext, peer, badgeCount) in settings.accountsAndPeers {
                 let mappedContext = ItemListPeerItem.Context.custom(ItemListPeerItem.Context.Custom(
                     accountPeerId: peerAccountContext.account.peerId,
@@ -174,7 +179,8 @@ func settingsItems(data: PeerInfoScreenData?, context: AccountContext, presentat
             }))
         }
         
-        items[.myProfile]!.append(PeerInfoScreenDisclosureItem(id: 0, text: presentationData.strings.Settings_MyProfile, icon: PresentationResourcesSettings.myProfile, action: {
+        // Chitgram: first in the main block, as Android's "Account".
+        items[.advanced]!.append(PeerInfoScreenDisclosureItem(id: 20, text: presentationData.strings.Settings_MyProfile, icon: PresentationResourcesSettings.myProfile, action: {
             interaction.openSettings(.profile)
         }))
         
@@ -268,12 +274,13 @@ func settingsItems(data: PeerInfoScreenData?, context: AccountContext, presentat
         devicesLabel = ""
     }
     
-    items[.shortcuts]!.append(PeerInfoScreenDisclosureItem(id: 3, label: .text(devicesLabel), text: presentationData.strings.Settings_Devices, icon: PresentationResourcesSettings.devices, action: {
+    // Chitgram: Devices and Folders sit in the main block, after Data, as on Android.
+    let chitgramDevicesItem = PeerInfoScreenDisclosureItem(id: 23, label: .text(devicesLabel), text: presentationData.strings.Settings_Devices, icon: PresentationResourcesSettings.devices, action: {
         interaction.openSettings(.devices)
-    }))
-    items[.shortcuts]!.append(PeerInfoScreenDisclosureItem(id: 4, text: presentationData.strings.Settings_ChatFolders, icon: PresentationResourcesSettings.chatFolders, action: {
+    })
+    let chitgramFoldersItem = PeerInfoScreenDisclosureItem(id: 24, text: presentationData.strings.Settings_ChatFolders, icon: PresentationResourcesSettings.chatFolders, action: {
         interaction.openSettings(.chatFolders)
-    }))
+    })
     
     let novagramLangCode = NovagramL10n.languageKey(for: presentationData.strings)
     // Chitgram: the "Chitgram" section, its header and rows in Android's order (SettingsActivity: Premium, the two
@@ -314,18 +321,21 @@ func settingsItems(data: PeerInfoScreenData?, context: AccountContext, presentat
     } else {
         notificationsWarning = false
     }
-    items[.advanced]!.append(PeerInfoScreenDisclosureItem(id: 0, label: notificationsWarning ? .badge("!", presentationData.theme.list.itemDestructiveColor) : .none, text: presentationData.strings.Settings_NotificationsAndSounds, icon: PresentationResourcesSettings.notifications, action: {
-        interaction.openSettings(.notificationsAndSounds)
+    // Chitgram: Android's order: Chat settings (Appearance), Privacy, Notifications, Data, Folders, Devices.
+    items[.advanced]!.append(PeerInfoScreenDisclosureItem(id: 3, text: presentationData.strings.Settings_Appearance, icon: PresentationResourcesSettings.appearance, action: {
+        interaction.openSettings(.appearance)
     }))
     items[.advanced]!.append(PeerInfoScreenDisclosureItem(id: 1, text: presentationData.strings.Settings_PrivacySettings, icon: PresentationResourcesSettings.security, action: {
         interaction.openSettings(.privacyAndSecurity)
     }))
+    items[.advanced]!.append(PeerInfoScreenDisclosureItem(id: 0, label: notificationsWarning ? .badge("!", presentationData.theme.list.itemDestructiveColor) : .none, text: presentationData.strings.Settings_NotificationsAndSounds, icon: PresentationResourcesSettings.notifications, action: {
+        interaction.openSettings(.notificationsAndSounds)
+    }))
     items[.advanced]!.append(PeerInfoScreenDisclosureItem(id: 2, text: presentationData.strings.Settings_ChatSettings, icon: PresentationResourcesSettings.dataAndStorage, action: {
         interaction.openSettings(.dataAndStorage)
     }))
-    items[.advanced]!.append(PeerInfoScreenDisclosureItem(id: 3, text: presentationData.strings.Settings_Appearance, icon: PresentationResourcesSettings.appearance, action: {
-        interaction.openSettings(.appearance)
-    }))
+    items[.advanced]!.append(chitgramFoldersItem)
+    items[.advanced]!.append(chitgramDevicesItem)
     
     items[.advanced]!.append(PeerInfoScreenDisclosureItem(id: 6, label: .text(data.isPowerSavingEnabled == true ? presentationData.strings.Settings_PowerSavingOn : presentationData.strings.Settings_PowerSavingOff), text: presentationData.strings.Settings_PowerSaving, icon: PresentationResourcesSettings.powerSaving, action: {
         interaction.openSettings(.powerSaving)
@@ -407,6 +417,8 @@ func settingsItems(data: PeerInfoScreenData?, context: AccountContext, presentat
         }
     }
     
+    // Chitgram: Android's "Help" header.
+    items[.support]!.append(PeerInfoScreenHeaderItem(id: "chitgram_help_header", text: ChitgramStrings.get(356)))
     items[.support]!.append(PeerInfoScreenDisclosureItem(id: 0, text: presentationData.strings.Settings_Support, icon: PresentationResourcesSettings.support, action: {
         interaction.openSettings(.support)
     }))

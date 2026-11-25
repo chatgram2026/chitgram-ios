@@ -5,12 +5,12 @@ import TelegramPresentationData
 import ChitgramCore
 
 /// The rows of the "Chitgram" section in the Settings tab, in the order Android shows them
-/// (`SettingsActivity.fillItems`, right under the accounts block).
+/// (`SettingsActivity.fillItems`, right under the accounts block: Settings first, About last).
 public enum ChitgramSectionRow: Int, CaseIterable {
+    case settings
     case premium
     case voiceRoulette
     case chatRoulette
-    case settings
     case appTheme
     case appCache
     case chatFinder
